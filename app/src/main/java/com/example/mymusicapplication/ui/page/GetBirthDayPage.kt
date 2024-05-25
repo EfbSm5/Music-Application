@@ -1,10 +1,10 @@
 package com.example.mymusicapplication.ui.page
 
 import android.app.DatePickerDialog
-import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
+import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.material3.Button
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
@@ -19,28 +19,33 @@ import androidx.compose.ui.unit.dp
 import java.util.Calendar
 
 @Composable
-fun getBirthDay(): String {
+fun GetBirthDay(birthDay: MutableList<String>) {
 
     var selectedDate by remember { mutableStateOf(Calendar.getInstance()) }
     val context = LocalContext.current
 
-    Column(
+    LazyColumn(
         modifier = Modifier.padding(100.dp),
         horizontalAlignment = Alignment.CenterHorizontally
     ) {
-        Text("Selected Date: ${selectedDate.time}")
-
-        Spacer(modifier = Modifier.height(16.dp))
-
-        Button(onClick = {
-            showDatePicker(context, selectedDate) { newDate ->
-                selectedDate = newDate
+        item { Text("Selected Date: ${selectedDate.time}") }
+        item { Spacer(modifier = Modifier.height(16.dp)) }
+        item {
+            Button(onClick = {
+                showDatePicker(context, selectedDate) { newDate ->
+                    selectedDate = newDate
+                }
+            }) {
+                Text("Select Date")
             }
-        }) {
-            Text("Select Date")
+        }
+        item {
+            Button(onClick = { birthDay.add(selectedDate.toString()) }) {
+                Text(text = "确定")
+            }
         }
     }
-    return selectedDate.time.toString()
+
 }
 
 

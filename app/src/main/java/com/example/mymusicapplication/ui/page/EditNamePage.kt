@@ -16,11 +16,8 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.unit.dp
 
 @Composable
-fun EditName(needName: MutableList<String>, onClick: (String) -> Unit = {}) {
+fun EditName(needName: MutableList<String>) {
     var name by remember { mutableStateOf("") }
-    var isVisible by remember {
-        mutableStateOf(true)
-    }
     Column(
         modifier = Modifier.padding(50.dp),
         verticalArrangement = Arrangement.Center,
@@ -32,7 +29,7 @@ fun EditName(needName: MutableList<String>, onClick: (String) -> Unit = {}) {
             onValueChange = { newText -> name = newText },
             label = { Text("请输入姓名") })
         Button(onClick = {
-            onClick(name)
+            needName.add(name)
 
         }) {
             Text(text = "下一题")
