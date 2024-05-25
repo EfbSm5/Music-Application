@@ -15,18 +15,18 @@ import androidx.compose.runtime.remember
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.unit.dp
-import com.example.mymusicapplication.Questions
+import com.example.mymusicapplication.QuestionsAndAnswers
 
 @Composable
-fun SingleChoose(questions: Questions, sex: MutableList<String>) {
+fun SexChoose(questionsAndAnswers: QuestionsAndAnswers, sex: MutableList<String>) {
     val selectedOption = remember { mutableStateOf<String?>(null) } // 存储当前选中的选项
     LazyColumn(
-        modifier = Modifier.padding(50.dp),
+        modifier = Modifier.fillMaxWidth(),
         verticalArrangement = Arrangement.Center,
         horizontalAlignment = Alignment.CenterHorizontally
     ) {
-        item { Text(text = questions.getQuestion()) }
-        itemsIndexed(questions.getAnswer()) { _, item ->
+        item { Text(text = questionsAndAnswers.getQuestion()) }
+        itemsIndexed(questionsAndAnswers.getPotentialAnswer()) { _, item ->
             LazyRow(
                 modifier = Modifier.fillMaxWidth(), horizontalArrangement = Arrangement.Center
             ) {

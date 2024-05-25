@@ -1,7 +1,9 @@
 package com.example.mymusicapplication.ui.page
 
 import android.app.DatePickerDialog
+import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Spacer
+import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.lazy.LazyColumn
@@ -25,7 +27,8 @@ fun GetBirthDay(birthDay: MutableList<String>) {
     val context = LocalContext.current
 
     LazyColumn(
-        modifier = Modifier.padding(100.dp),
+        modifier = Modifier.fillMaxWidth(),
+        verticalArrangement = Arrangement.Center,
         horizontalAlignment = Alignment.CenterHorizontally
     ) {
         item { Text("Selected Date: ${selectedDate.time}") }
@@ -50,9 +53,7 @@ fun GetBirthDay(birthDay: MutableList<String>) {
 
 
 private fun showDatePicker(
-    context: android.content.Context,
-    selectedDate: Calendar,
-    onDateSelected: (Calendar) -> Unit
+    context: android.content.Context, selectedDate: Calendar, onDateSelected: (Calendar) -> Unit
 ) {
     val datePickerDialog = DatePickerDialog(
         context,
