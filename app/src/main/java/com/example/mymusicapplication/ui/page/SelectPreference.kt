@@ -6,7 +6,6 @@ import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.LazyRow
 import androidx.compose.foundation.lazy.itemsIndexed
-import androidx.compose.foundation.selection.toggleable
 import androidx.compose.material3.Button
 import androidx.compose.material3.Checkbox
 import androidx.compose.material3.Text
@@ -41,21 +40,22 @@ fun SelectPreference(questionsAndAnswers: QuestionsAndAnswers, preference: Mutab
                 item {
                     Checkbox(
                         checked = isSelected.value,
-                        onCheckedChange = { isSelected.value = it },
-                        modifier = Modifier.toggleable(value = isSelected.value, onValueChange = {
+                        onCheckedChange = {
                             isSelected.value = !isSelected.value
                             if (isSelected.value) {
                                 selectedOptions.add(item)
                             } else {
                                 selectedOptions.remove(item)
                             }
-                        }),
+                        },
                     )
                 }
             }
         }
         item {
-            Button(onClick = { preference.addAll(selectedOptions) }) {
+            Button(onClick = {
+                preference.addAll(selectedOptions)
+            }) {
                 Text(text = "确定")
             }
         }

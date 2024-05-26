@@ -2,7 +2,6 @@ package com.example.mymusicapplication.ui.page
 
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.fillMaxWidth
-import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.material3.Button
 import androidx.compose.material3.Text
@@ -14,7 +13,6 @@ import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
-import androidx.compose.ui.unit.dp
 
 @Composable
 fun EditName(needName: MutableList<String>) {
@@ -33,7 +31,6 @@ fun EditName(needName: MutableList<String>) {
         item {
             Button(onClick = {
                 needName.add(name)
-
             }) {
                 Text(text = "下一题")
             }

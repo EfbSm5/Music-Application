@@ -1,12 +1,16 @@
 package com.example.mymusicapplication
 
+import android.annotation.SuppressLint
 import android.os.Bundle
 import androidx.activity.compose.setContent
 import androidx.activity.enableEdgeToEdge
 import androidx.appcompat.app.AppCompatActivity
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.fillMaxSize
-import androidx.compose.foundation.layout.fillMaxWidth
+import androidx.compose.material3.ExperimentalMaterial3Api
+import androidx.compose.material3.Scaffold
+import androidx.compose.material3.Text
+import androidx.compose.material3.TopAppBar
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.mutableStateListOf
 import androidx.compose.runtime.remember
@@ -21,17 +25,28 @@ import com.example.mymusicapplication.ui.theme.MyMusicApplicationTheme
 
 class DataActivity : AppCompatActivity() {
 
+    @SuppressLint("UnusedMaterial3ScaffoldPaddingParameter")
+    @OptIn(ExperimentalMaterial3Api::class)
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         enableEdgeToEdge()
         setContent {
             MyMusicApplicationTheme {
-                Box(
-                    contentAlignment = Alignment.Center,
-                    modifier = Modifier.fillMaxSize(),
-                ) {
-                    DataApp()
+//                val progress = remember {
+//                    mutableStateOf<Float>(0.0F)
+//               }
+//              LinearProgressIndicator(progress = progress.value)
+                Scaffold(topBar = {
+                    TopAppBar(title = { Text(text = "让我们更了解你") })
+                }) {
+                    Box(
+                        contentAlignment = Alignment.Center,
+                        modifier = Modifier.fillMaxSize(),
+                    ) {
+                        DataApp()
+                    }
                 }
+
             }
         }
     }
@@ -63,5 +78,8 @@ fun DataApp() {
     }
     if (preference.isNotEmpty() && useEmotion.isEmpty()) {
         GetFeelings(useEmotion)
+    }
+    if (useEmotion.isNotEmpty()) {
+
     }
 }

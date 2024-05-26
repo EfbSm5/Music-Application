@@ -5,7 +5,6 @@ import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
-import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.material3.Button
 import androidx.compose.material3.Text
@@ -31,6 +30,7 @@ fun GetBirthDay(birthDay: MutableList<String>) {
         verticalArrangement = Arrangement.Center,
         horizontalAlignment = Alignment.CenterHorizontally
     ) {
+        item { Text(text = "请选择你的生日") }
         item { Text("Selected Date: ${selectedDate.time}") }
         item { Spacer(modifier = Modifier.height(16.dp)) }
         item {
