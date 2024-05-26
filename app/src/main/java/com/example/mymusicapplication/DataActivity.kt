@@ -20,6 +20,7 @@ import com.example.mymusicapplication.ui.page.EditName
 import com.example.mymusicapplication.ui.page.SexChoose
 import com.example.mymusicapplication.ui.page.GetBirthDay
 import com.example.mymusicapplication.ui.page.GetFeelings
+import com.example.mymusicapplication.ui.page.MainScreen
 import com.example.mymusicapplication.ui.page.SelectPreference
 import com.example.mymusicapplication.ui.theme.MyMusicApplicationTheme
 
@@ -80,6 +81,6 @@ fun DataApp() {
         GetFeelings(useEmotion)
     }
     if (useEmotion.isNotEmpty()) {
-
+        MainScreen()
     }
 }
