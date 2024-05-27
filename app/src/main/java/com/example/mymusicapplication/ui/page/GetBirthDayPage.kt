@@ -20,7 +20,7 @@ import androidx.compose.ui.unit.dp
 import java.util.Calendar
 
 @Composable
-fun GetBirthDay(birthDay: MutableList<String>) {
+fun GetBirthDay(onBirthdayConfirmed: (String) -> Unit, onNavigateToNextScreen: () -> Unit = {}) {
 
     var selectedDate by remember { mutableStateOf(Calendar.getInstance()) }
     val context = LocalContext.current
@@ -43,7 +43,10 @@ fun GetBirthDay(birthDay: MutableList<String>) {
             }
         }
         item {
-            Button(onClick = { birthDay.add(selectedDate.toString()) }) {
+            Button(onClick = {
+                onBirthdayConfirmed(selectedDate.toString())
+                onNavigateToNextScreen()
+            }) {
                 Text(text = "确定")
             }
         }

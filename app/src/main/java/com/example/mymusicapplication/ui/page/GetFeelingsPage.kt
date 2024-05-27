@@ -16,7 +16,7 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 
 @Composable
-fun GetFeelings(feel: MutableList<Float>) {
+fun GetFeelings(onEmotionConfirmed: (Float) -> Unit, onNavigateToNextScreen: () -> Unit = {}) {
     var feeling by remember { mutableFloatStateOf(0.0F) }
     LazyColumn(
         modifier = Modifier.fillMaxWidth(),
@@ -37,7 +37,10 @@ fun GetFeelings(feel: MutableList<Float>) {
             }
         }
         item {
-            Button(onClick = { feel.add(feeling) }) {
+            Button(onClick = {
+                onEmotionConfirmed(feeling)
+                onNavigateToNextScreen()
+            }) {
                 Text(text = "确定")
             }
         }

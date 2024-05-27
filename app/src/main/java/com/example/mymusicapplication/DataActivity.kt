@@ -12,17 +12,20 @@ import androidx.compose.material3.Scaffold
 import androidx.compose.material3.Text
 import androidx.compose.material3.TopAppBar
 import androidx.compose.runtime.Composable
-import androidx.compose.runtime.mutableStateListOf
+import androidx.compose.runtime.getValue
+import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
+import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import com.example.mymusicapplication.ui.page.EditName
 import com.example.mymusicapplication.ui.page.SexChoose
 import com.example.mymusicapplication.ui.page.GetBirthDay
 import com.example.mymusicapplication.ui.page.GetFeelings
-import com.example.mymusicapplication.ui.page.MainScreen
+import com.example.mymusicapplication.ui.page.PhotoScreen
 import com.example.mymusicapplication.ui.page.SelectPreference
 import com.example.mymusicapplication.ui.theme.MyMusicApplicationTheme
+import java.io.File
 
 class DataActivity : AppCompatActivity() {
 
@@ -60,27 +63,95 @@ fun DataApp() {
         "你听歌的偏好", listOf("民谣", "摇滚", "流行", "说唱", "电子", "ACG", "古典", "爵士")
     )
 
-    val name = remember { mutableStateListOf<String>() }
-    val sex = remember { mutableStateListOf<String>() }
-    val birthDay = remember { mutableStateListOf<String>() }
-    val preference = remember { mutableStateListOf<String>() }
-    val useEmotion = remember { mutableStateListOf<Float>() }
-    if (name.isEmpty()) {
-        EditName(name)
+    var profile by remember {
+        mutableStateOf(UserProfile())
     }
-    if (name.isNotEmpty() && sex.isEmpty()) {
-        SexChoose(sexQuestionsAndAnswers, sex)
+
+    var currentScreen: State by remember {
+        mutableStateOf(State.Name)
     }
-    if (sex.isNotEmpty() && birthDay.isEmpty()) {
-        GetBirthDay(birthDay)
+    val onNavigateToNextScreen = {
+        currentScreen = currentScreen.nextScreen()
     }
-    if (birthDay.isNotEmpty() && preference.isEmpty()) {
-        SelectPreference(preferencesQuestionsAndAnswers, preference)
+
+
+    when (currentScreen) {
+        State.Name -> {
+            EditName(
+                onNameConfirmed = { profile = profile.copy(name = it) },
+                onNavigateToNextScreen = onNavigateToNextScreen
+            )
+        }
+
+        State.Sex -> {
+            SexChoose(
+                sexQuestionsAndAnswers,
+                onSexConfirmed = { profile = profile.copy(sex = it) },
+                onNavigateToNextScreen = onNavigateToNextScreen
+            )
+        }
+
+        State.Avatar -> {
+            PhotoScreen(
+                onPhotoConfirmed = { profile = profile.copy(photoFile = it) },
+                onNavigateToNextScreen = onNavigateToNextScreen
+            )
+        }
+
+        State.Birthday -> {
+            GetBirthDay(
+                onBirthdayConfirmed = { profile = profile.copy(birthDay = it) },
+                onNavigateToNextScreen = onNavigateToNextScreen
+            )
+        }
+
+        State.FloatValue -> {
+            GetFeelings(
+                onEmotionConfirmed = { profile = profile.copy(useEmotion = it) },
+                onNavigateToNextScreen = onNavigateToNextScreen
+            )
+        }
+
+        State.Preference -> {
+            SelectPreference(
+                preferencesQuestionsAndAnswers,
+                onPerferenceConfirmed = { profile = profile.copy(preference = it) },
+                onNavigateToNextScreen = onNavigateToNextScreen
+            )
+        }
+
+        else -> {
+
+        }
     }
-    if (preference.isNotEmpty() && useEmotion.isEmpty()) {
-        GetFeelings(useEmotion)
+
+}
+
+data class UserProfile(
+    val name: String = "",
+    val sex: String = "",
+    val birthDay: String = "",
+    val preference: List<String>? = null,
+    val useEmotion: Float = 0f,
+    val photoFile: File? = null
+)
+
+sealed interface State {
+    data object Name : State
+    data object Sex : State
+    data object Birthday : State
+    data object Preference : State
+    data object FloatValue : State
+    data object Avatar : State
+    data object Undefined : State
+
+    companion object {
+        private val list = listOf(Name, Sex, Birthday, Preference, FloatValue, Avatar, Undefined)
     }
-    if (useEmotion.isNotEmpty()) {
-        MainScreen()
+
+    fun nextScreen(): State {
+        return list[list.indexOf(this) + 1]
     }
 }
+
+

@@ -10,16 +10,22 @@ import androidx.compose.material3.Button
 import androidx.compose.material3.RadioButton
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
+import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.unit.dp
 import com.example.mymusicapplication.QuestionsAndAnswers
 
 @Composable
-fun SexChoose(questionsAndAnswers: QuestionsAndAnswers, sex: MutableList<String>) {
-    val selectedOption = remember { mutableStateOf<String?>(null) } // 存储当前选中的选项
+fun SexChoose(
+    questionsAndAnswers: QuestionsAndAnswers,
+    onSexConfirmed: (String) -> Unit,
+    onNavigateToNextScreen: () -> Unit = {}
+) {
+    var selectedOption by remember { mutableStateOf<String>("") } // 存储当前选中的选项
     LazyColumn(
         modifier = Modifier.fillMaxWidth(),
         verticalArrangement = Arrangement.Center,
@@ -37,17 +43,16 @@ fun SexChoose(questionsAndAnswers: QuestionsAndAnswers, sex: MutableList<String>
                 }
                 item {
                     RadioButton(
-                        selected = selectedOption.value == item, // 如果当前选项是选中的选项，则RadioButton被选中
-                        onClick = { selectedOption.value = item },
+                        selected = selectedOption == item, // 如果当前选项是选中的选项，则RadioButton被选中
+                        onClick = { selectedOption = item },
                     )
                 }
             }
         }
         item {
             Button(onClick = {
-                if (selectedOption.value != null) {
-                    sex.add(selectedOption.value!!)
-                }
+                onSexConfirmed(selectedOption)
+                onNavigateToNextScreen()
             }) {
                 Text(text = "下一题")
             }

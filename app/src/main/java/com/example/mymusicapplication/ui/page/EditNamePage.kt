@@ -15,7 +15,7 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 
 @Composable
-fun EditName(needName: MutableList<String>) {
+fun EditName(onNameConfirmed: (String) -> Unit, onNavigateToNextScreen: () -> Unit = {}) {
     var name by remember { mutableStateOf("") }
     LazyColumn(
         modifier = Modifier.fillMaxWidth(),
@@ -30,7 +30,8 @@ fun EditName(needName: MutableList<String>) {
         }
         item {
             Button(onClick = {
-                needName.add(name)
+                onNameConfirmed(name)
+                onNavigateToNextScreen()
             }) {
                 Text(text = "下一题")
             }

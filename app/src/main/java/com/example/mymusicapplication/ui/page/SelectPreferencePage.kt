@@ -19,7 +19,11 @@ import androidx.compose.ui.unit.dp
 import com.example.mymusicapplication.QuestionsAndAnswers
 
 @Composable
-fun SelectPreference(questionsAndAnswers: QuestionsAndAnswers, preference: MutableList<String>) {
+fun SelectPreference(
+    questionsAndAnswers: QuestionsAndAnswers,
+    onPerferenceConfirmed: (List<String>) -> Unit,
+    onNavigateToNextScreen: () -> Unit = {}
+) {
     val selectedOptions = remember { mutableStateListOf<String>() }
     LazyColumn(
         modifier = Modifier.fillMaxWidth(),
@@ -54,7 +58,9 @@ fun SelectPreference(questionsAndAnswers: QuestionsAndAnswers, preference: Mutab
         }
         item {
             Button(onClick = {
-                preference.addAll(selectedOptions)
+                onPerferenceConfirmed(selectedOptions)
+                onNavigateToNextScreen()
+
             }) {
                 Text(text = "确定")
             }
