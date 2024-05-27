@@ -18,9 +18,7 @@ import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.material3.Button
 import androidx.compose.material3.ExperimentalMaterial3Api
-import androidx.compose.material3.Scaffold
 import androidx.compose.material3.Text
-import androidx.compose.material3.TopAppBar
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.getValue
@@ -29,6 +27,7 @@ import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.graphics.painter.Painter
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.platform.LocalLifecycleOwner
 import androidx.compose.ui.unit.dp
@@ -45,7 +44,6 @@ import java.util.Locale
 @OptIn(ExperimentalPermissionsApi::class)
 @Composable
 fun RequestCameraPermission(onImageCaptureCreated: (ImageCapture) -> Unit) {
-    val context = LocalContext.current
     val cameraPermissionState = rememberPermissionState(
         android.Manifest.permission.CAMERA
     )
@@ -63,7 +61,6 @@ fun RequestCameraPermission(onImageCaptureCreated: (ImageCapture) -> Unit) {
 
 @Composable
 fun CameraView(onImageCaptureCreated: (ImageCapture) -> Unit) {
-    val context = LocalContext.current
     val lifecycleOwner = LocalLifecycleOwner.current
 
     AndroidView(factory = { ctx ->
@@ -91,7 +88,6 @@ fun CameraView(onImageCaptureCreated: (ImageCapture) -> Unit) {
                 Log.e("CameraView", "Use case binding failed", exc)
             }
 
-            previewView
         }, ContextCompat.getMainExecutor(ctx))
 
         previewView
@@ -156,6 +152,11 @@ fun takePhoto(context: Context, imageCapture: ImageCapture, onImageCaptured: (Ur
             }
         }
     )
+}
+
+@Composable
+fun DisplayImagine(painter: Painter) {
+    Image(painter =painter, contentDescription ="Photo you get")
 }
 
 @OptIn(ExperimentalMaterial3Api::class)
