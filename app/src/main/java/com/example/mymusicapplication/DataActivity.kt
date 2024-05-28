@@ -8,11 +8,13 @@ import androidx.appcompat.app.AppCompatActivity
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.material3.ExperimentalMaterial3Api
+import androidx.compose.material3.LinearProgressIndicator
 import androidx.compose.material3.Scaffold
 import androidx.compose.material3.Text
 import androidx.compose.material3.TopAppBar
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
+import androidx.compose.runtime.mutableFloatStateOf
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
@@ -24,6 +26,7 @@ import com.example.mymusicapplication.ui.page.GetBirthDay
 import com.example.mymusicapplication.ui.page.GetFeelings
 import com.example.mymusicapplication.ui.page.PhotoScreen
 import com.example.mymusicapplication.ui.page.SelectPreference
+import com.example.mymusicapplication.ui.page.ShowAll
 import com.example.mymusicapplication.ui.theme.MyMusicApplicationTheme
 import java.io.File
 
@@ -36,10 +39,10 @@ class DataActivity : AppCompatActivity() {
         enableEdgeToEdge()
         setContent {
             MyMusicApplicationTheme {
-//                val progress = remember {
-//                    mutableStateOf<Float>(0.0F)
-//               }
-//              LinearProgressIndicator(progress = progress.value)
+                val progress by remember {
+                    mutableFloatStateOf(0.0F)
+                }
+                LinearProgressIndicator(progress = progress)
                 Scaffold(topBar = {
                     TopAppBar(title = { Text(text = "让我们更了解你") })
                 }) {
@@ -47,7 +50,7 @@ class DataActivity : AppCompatActivity() {
                         contentAlignment = Alignment.Center,
                         modifier = Modifier.fillMaxSize(),
                     ) {
-                        DataApp()
+                        DataApp(progress)
                     }
                 }
 
@@ -57,7 +60,7 @@ class DataActivity : AppCompatActivity() {
 }
 
 @Composable
-fun DataApp() {
+fun DataApp(progress: Float) {
     val sexQuestionsAndAnswers = QuestionsAndAnswers("你的性别", listOf("男", "女", "其他"))
     val preferencesQuestionsAndAnswers = QuestionsAndAnswers(
         "你听歌的偏好", listOf("民谣", "摇滚", "流行", "说唱", "电子", "ACG", "古典", "爵士")
@@ -81,6 +84,7 @@ fun DataApp() {
                 onNameConfirmed = { profile = profile.copy(name = it) },
                 onNavigateToNextScreen = onNavigateToNextScreen
             )
+
         }
 
         State.Sex -> {
@@ -115,9 +119,13 @@ fun DataApp() {
         State.Preference -> {
             SelectPreference(
                 preferencesQuestionsAndAnswers,
-                onPerferenceConfirmed = { profile = profile.copy(preference = it) },
+                onPreferenceConfirmed = { profile = profile.copy(preference = it) },
                 onNavigateToNextScreen = onNavigateToNextScreen
             )
+        }
+
+        State.Data -> {
+            ShowAll(userProfile = profile)
         }
 
         else -> {
@@ -143,10 +151,12 @@ sealed interface State {
     data object Preference : State
     data object FloatValue : State
     data object Avatar : State
+    data object Data : State
     data object Undefined : State
 
     companion object {
-        private val list = listOf(Name, Sex, Birthday, Preference, FloatValue, Avatar, Undefined)
+        private val list =
+            listOf(Name, Sex, Birthday, Preference, FloatValue, Avatar, Data, Undefined)
     }
 
     fun nextScreen(): State {

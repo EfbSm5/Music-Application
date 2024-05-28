@@ -30,8 +30,10 @@ fun EditName(onNameConfirmed: (String) -> Unit, onNavigateToNextScreen: () -> Un
         }
         item {
             Button(onClick = {
-                onNameConfirmed(name)
-                onNavigateToNextScreen()
+                if (name.isNotEmpty()) {
+                    onNameConfirmed(name)
+                    onNavigateToNextScreen()
+                }
             }) {
                 Text(text = "下一题")
             }

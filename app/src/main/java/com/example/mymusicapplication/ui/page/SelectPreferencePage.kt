@@ -21,7 +21,7 @@ import com.example.mymusicapplication.QuestionsAndAnswers
 @Composable
 fun SelectPreference(
     questionsAndAnswers: QuestionsAndAnswers,
-    onPerferenceConfirmed: (List<String>) -> Unit,
+    onPreferenceConfirmed: (List<String>) -> Unit,
     onNavigateToNextScreen: () -> Unit = {}
 ) {
     val selectedOptions = remember { mutableStateListOf<String>() }
@@ -58,9 +58,8 @@ fun SelectPreference(
         }
         item {
             Button(onClick = {
-                onPerferenceConfirmed(selectedOptions)
+                onPreferenceConfirmed(selectedOptions)
                 onNavigateToNextScreen()
-
             }) {
                 Text(text = "确定")
             }

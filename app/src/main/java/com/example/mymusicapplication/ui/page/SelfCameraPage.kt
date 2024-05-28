@@ -110,7 +110,7 @@ fun takePhoto(
 @OptIn(ExperimentalPermissionsApi::class)
 @SuppressLint("UnusedMaterial3ScaffoldPaddingParameter")
 @Composable
-fun PhotoScreen(onPhotoConfirmed: (String) -> Unit, onNavigateToNextScreen: () -> Unit = {}) {
+fun PhotoScreen(onPhotoConfirmed: (File) -> Unit, onNavigateToNextScreen: () -> Unit = {}) {
 
     var state: State by remember { mutableStateOf(State.PermissionDenied) }
 
@@ -126,13 +126,19 @@ fun PhotoScreen(onPhotoConfirmed: (String) -> Unit, onNavigateToNextScreen: () -
 
     LazyColumn(modifier = Modifier.fillMaxSize()) {
         item {
-            View(state = state, onImageSaved = { state = State.Success(uri = it) })
+            View(state = state,
+                onImageSaved = { state = State.Success(uri = it) },
+                onClick = {
+                    onPhotoConfirmed(it)
+                    onNavigateToNextScreen()
+                })
         }
     }
 }
 
+
 @Composable
-fun View(state: State, onImageSaved: (Uri) -> Unit) {
+fun View(state: State, onImageSaved: (Uri) -> Unit, onClick: (File) -> Unit) {
 
     when (state) {
         State.Capture -> {
@@ -147,7 +153,7 @@ fun View(state: State, onImageSaved: (Uri) -> Unit) {
             val savedImage = state.uri.toFile()
             AsyncImage(model = savedImage, contentDescription = null)
             Button(onClick = {
-// TODO:  
+                onClick(savedImage)
             }) {
                 Text(text = "确定")
             }

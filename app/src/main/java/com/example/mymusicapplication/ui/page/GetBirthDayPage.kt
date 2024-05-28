@@ -1,5 +1,6 @@
 package com.example.mymusicapplication.ui.page
 
+import android.annotation.SuppressLint
 import android.app.DatePickerDialog
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Spacer
@@ -17,13 +18,16 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.unit.dp
+import java.text.SimpleDateFormat
 import java.util.Calendar
 
+@SuppressLint("SimpleDateFormat")
 @Composable
 fun GetBirthDay(onBirthdayConfirmed: (String) -> Unit, onNavigateToNextScreen: () -> Unit = {}) {
 
     var selectedDate by remember { mutableStateOf(Calendar.getInstance()) }
     val context = LocalContext.current
+    val dataFormat = SimpleDateFormat("yyyy-MM-dd")
 
     LazyColumn(
         modifier = Modifier.fillMaxWidth(),
@@ -31,7 +35,7 @@ fun GetBirthDay(onBirthdayConfirmed: (String) -> Unit, onNavigateToNextScreen: (
         horizontalAlignment = Alignment.CenterHorizontally
     ) {
         item { Text(text = "请选择你的生日") }
-        item { Text("Selected Date: ${selectedDate.time}") }
+        item { Text(dataFormat.format(selectedDate.time)) }
         item { Spacer(modifier = Modifier.height(16.dp)) }
         item {
             Button(onClick = {
@@ -44,7 +48,7 @@ fun GetBirthDay(onBirthdayConfirmed: (String) -> Unit, onNavigateToNextScreen: (
         }
         item {
             Button(onClick = {
-                onBirthdayConfirmed(selectedDate.toString())
+                onBirthdayConfirmed(dataFormat.format(selectedDate.time))
                 onNavigateToNextScreen()
             }) {
                 Text(text = "确定")

@@ -51,8 +51,10 @@ fun SexChoose(
         }
         item {
             Button(onClick = {
-                onSexConfirmed(selectedOption)
-                onNavigateToNextScreen()
+                if (selectedOption.isNotEmpty()) {
+                    onSexConfirmed(selectedOption)
+                    onNavigateToNextScreen()
+                }
             }) {
                 Text(text = "下一题")
             }
