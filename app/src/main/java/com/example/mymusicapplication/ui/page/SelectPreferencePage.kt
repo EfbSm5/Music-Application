@@ -1,6 +1,7 @@
 package com.example.mymusicapplication.ui.page
 
 import androidx.compose.foundation.layout.Arrangement
+import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.lazy.LazyColumn
@@ -33,27 +34,21 @@ fun SelectPreference(
         item { Text(text = questionsAndAnswers.getQuestion()) }
         itemsIndexed(questionsAndAnswers.getPotentialAnswer()) { _, item ->
             val isSelected = remember { mutableStateOf(false) }
-            LazyRow(
-                modifier = Modifier.fillMaxWidth(), horizontalArrangement = Arrangement.Center
-            ) {
-                item {
-                    Text(
-                        text = item, modifier = Modifier.padding(start = 8.dp)
-                    )
-                }
-                item {
-                    Checkbox(
-                        checked = isSelected.value,
-                        onCheckedChange = {
-                            isSelected.value = !isSelected.value
-                            if (isSelected.value) {
-                                selectedOptions.add(item)
-                            } else {
-                                selectedOptions.remove(item)
-                            }
-                        },
-                    )
-                }
+            Row {
+                Text(
+                    text = item, modifier = Modifier.padding(start = 8.dp)
+                )
+                Checkbox(
+                    checked = isSelected.value,
+                    onCheckedChange = {
+                        isSelected.value = !isSelected.value
+                        if (isSelected.value) {
+                            selectedOptions.add(item)
+                        } else {
+                            selectedOptions.remove(item)
+                        }
+                    },
+                )
             }
         }
         item {

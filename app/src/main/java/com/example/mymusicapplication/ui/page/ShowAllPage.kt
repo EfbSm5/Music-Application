@@ -1,10 +1,12 @@
 package com.example.mymusicapplication.ui.page
 
+import android.util.Log
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.LazyRow
+import androidx.compose.material.Button
 import androidx.compose.material.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Alignment
@@ -12,7 +14,10 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.unit.dp
 import coil.compose.AsyncImage
 import com.example.mymusicapplication.UserProfile
+import com.example.mymusicapplication.toJson
 import java.io.File.separator
+
+private const val TAG = "ShowAllPage"
 
 @Composable
 fun ShowAll(userProfile: UserProfile) {
@@ -56,6 +61,14 @@ fun ShowAll(userProfile: UserProfile) {
                         Text(text = userProfile.preference.joinToString(separator = " "))
                     }
                 }
+            }
+        }
+        item {
+            Button(onClick = {
+                val jsonData = toJson(userProfile)
+                Log.d(TAG, "ShowAll: $jsonData")
+            }) {
+                Text(text = "确定")
             }
         }
 
