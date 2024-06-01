@@ -126,12 +126,10 @@ fun PhotoScreen(onPhotoConfirmed: (File) -> Unit, onNavigateToNextScreen: () -> 
 
     LazyColumn(modifier = Modifier.fillMaxSize()) {
         item {
-            View(state = state,
-                onImageSaved = { state = State.Success(uri = it) },
-                onClick = {
-                    onPhotoConfirmed(it)
-                    onNavigateToNextScreen()
-                })
+            View(state = state, onImageSaved = { state = State.Success(uri = it) }, onClick = {
+                onPhotoConfirmed(it)
+                onNavigateToNextScreen()
+            })
         }
     }
 }

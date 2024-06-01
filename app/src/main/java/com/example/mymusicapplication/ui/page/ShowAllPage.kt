@@ -1,5 +1,8 @@
 package com.example.mymusicapplication.ui.page
 
+import android.content.ClipData
+import android.content.ClipboardManager
+import android.content.Context
 import android.util.Log
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.fillMaxWidth
@@ -15,12 +18,12 @@ import androidx.compose.ui.unit.dp
 import coil.compose.AsyncImage
 import com.example.mymusicapplication.UserProfile
 import com.example.mymusicapplication.toJson
-import java.io.File.separator
 
 private const val TAG = "ShowAllPage"
 
 @Composable
-fun ShowAll(userProfile: UserProfile) {
+fun ShowAll(userProfile: UserProfile, context: Context) {
+
     LazyColumn(
         modifier = Modifier.fillMaxWidth(),
         verticalArrangement = Arrangement.Center,
@@ -55,7 +58,7 @@ fun ShowAll(userProfile: UserProfile) {
             LazyRow {
                 item { Text(text = "喜好:") }
                 item {
-                    if (userProfile.preference.isNullOrEmpty()) {
+                    if (userProfile.preference.isEmpty()) {
                         Text(text = "无")
                     } else {
                         Text(text = userProfile.preference.joinToString(separator = " "))
@@ -66,7 +69,11 @@ fun ShowAll(userProfile: UserProfile) {
         item {
             Button(onClick = {
                 val jsonData = toJson(userProfile)
+                val clipboard =
+                    context.getSystemService(Context.CLIPBOARD_SERVICE) as ClipboardManager
                 Log.d(TAG, "ShowAll: $jsonData")
+                val clip = ClipData.newPlainText("label", jsonData)
+                clipboard.setPrimaryClip(clip)
             }) {
                 Text(text = "确定")
             }

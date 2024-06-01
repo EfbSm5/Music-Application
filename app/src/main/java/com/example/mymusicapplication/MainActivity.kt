@@ -4,6 +4,7 @@ import android.annotation.SuppressLint
 import android.content.ClipboardManager
 import android.content.Context
 import android.os.Bundle
+import android.util.Log
 import androidx.activity.compose.setContent
 import androidx.activity.enableEdgeToEdge
 import androidx.appcompat.app.AppCompatActivity
@@ -12,25 +13,24 @@ import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.Edit
 import androidx.compose.material3.AlertDialog
-import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.Icon
-import androidx.compose.material3.LinearProgressIndicator
-import androidx.compose.material3.Scaffold
 import androidx.compose.material3.Text
 import androidx.compose.material3.TextButton
-import androidx.compose.material3.TopAppBar
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
-import androidx.compose.runtime.mutableFloatStateOf
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.saveable.rememberSaveable
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.platform.LocalContext
+import androidx.core.content.ContextCompat.getSystemService
 import com.example.mymusicapplication.ui.page.MainPage
 import com.example.mymusicapplication.ui.page.UserConfigurationInitializationPage
 import com.example.mymusicapplication.ui.theme.MyMusicApplicationTheme
+
+private const val TAG = "MainActivity"
 
 class DataActivity : AppCompatActivity() {
 
@@ -44,40 +44,37 @@ class DataActivity : AppCompatActivity() {
                     contentAlignment = Alignment.Center,
                     modifier = Modifier.fillMaxSize(),
                 ) {
-                    val tempProfile = checkClipBoard()
-                    val havingProfile by remember { mutableStateOf(tempProfile.name != "") }
-                    var confirmed by remember { mutableStateOf(false) }
-                    var openNewDialog by rememberSaveable { mutableStateOf(true) }
-                    DialogForHavingProfile(openDialog = havingProfile, confirm = {  }) {}
-                    if (!confirmed) {
+                    var havingProfile by remember {
+                        mutableStateOf(false)
+                    }
+                    if (havingProfile) {
                         MainPage()
                     } else {
-                        GetProfile()
+                        GetProfile { havingProfile = true }
                     }
-                    DialogForNewProfile(openDialog = openNewDialog, confirm = {
-                        confirmed = true
-                        openNewDialog = false
-                    }, onDismissRequest = { openNewDialog = false })
                 }
             }
         }
 
     }
-
-    private fun checkClipBoard(): UserProfile {
-        // 获取剪切板管理器
-        var text = ""
-        val clipboard = this.getSystemService(Context.CLIPBOARD_SERVICE) as ClipboardManager
-        if (clipboard.hasPrimaryClip()) {
-            val clipData = clipboard.primaryClip
-            val item = clipData?.getItemAt(0)
-            text = item?.text.toString()
-        }
-        val temp = fromJson(text)
-        return temp
-    }
 }
 
+fun checkClipBoard(context: Context): UserProfile {
+    val clipboard = context.getSystemService(Context.CLIPBOARD_SERVICE) as ClipboardManager
+    val text: String? = if (clipboard.hasPrimaryClip()) {
+        val clipData = clipboard.primaryClip
+        val item = clipData?.getItemAt(0)
+        item?.text.toString()
+    } else null
+    if (!text.isNullOrEmpty()) {
+        val temp = fromJson(text)
+        Log.d(TAG, "checkClipBoard: have data")
+        return temp
+    } else {
+        Log.d(TAG, "checkClipBoard: no data")
+        return UserProfile()
+    }
+}
 
 sealed interface State {
     data object Name : State
@@ -163,24 +160,27 @@ fun DialogForNewProfile(openDialog: Boolean, confirm: () -> Unit, onDismissReque
 
 
 @SuppressLint("UnusedMaterial3ScaffoldPaddingParameter")
-@OptIn(ExperimentalMaterial3Api::class)
 @Composable
-fun GetProfile() {
-    val progress by remember {
-        mutableFloatStateOf(0.0F)
+fun GetProfile(confirm: () -> Unit) {
+    val context = LocalContext.current
+    val tempProfile = checkClipBoard(context)
+    if (tempProfile != UserProfile()) {
+        DialogForHavingProfile(true, confirm = {}, onDismissRequest = {})
     }
-    LinearProgressIndicator(progress = progress)
-    Scaffold(topBar = {
-        TopAppBar(title = { Text(text = "让我们更了解你") })
-    }) {
-        Box(
-            contentAlignment = Alignment.Center,
-            modifier = Modifier.fillMaxSize(),
-        ) {
-            UserConfigurationInitializationPage()
-        }
+    var confirmed by remember { mutableStateOf(false) }
+    var openNewDialog by rememberSaveable { mutableStateOf(true) }
+    DialogForNewProfile(openDialog = openNewDialog, confirm = {
+        confirmed = true
+        openNewDialog = false
+    }, onDismissRequest = {
+        openNewDialog = false
+        confirm()
+    })
+    if (confirmed) {
+        UserConfigurationInitializationPage()
     }
 }
+
 
 
 
