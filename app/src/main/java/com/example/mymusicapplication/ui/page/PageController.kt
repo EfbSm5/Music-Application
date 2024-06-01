@@ -17,7 +17,6 @@ import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.platform.LocalContext
-import com.example.mymusicapplication.DialogForHavingProfile
 import com.example.mymusicapplication.QuestionsAndAnswers
 import com.example.mymusicapplication.State
 import com.example.mymusicapplication.UserProfile
