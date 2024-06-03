@@ -7,7 +7,7 @@ import java.io.File
 
 @Entity(tableName = "profile")
 data class UserProfile(
-    @PrimaryKey(autoGenerate = true) val id: Int = 0,
+    @PrimaryKey(autoGenerate = true) var id: Int = 0,
 
     @ColumnInfo(name = "name") val name: String = "默认昵称",
 

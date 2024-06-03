@@ -10,7 +10,7 @@ import androidx.room.Update
 @Dao
 interface ProfileDuo {
     @Insert(onConflict = OnConflictStrategy.IGNORE)
-    suspend fun insert(userProfile: UserProfile): Int
+     fun insert(userProfile: UserProfile): Int
 
     @Update
     suspend fun update(userProfile: UserProfile)

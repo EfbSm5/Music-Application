@@ -16,8 +16,10 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.unit.dp
 import coil.compose.AsyncImage
+import com.example.mymusicapplication.AppDataBase
 import com.example.mymusicapplication.UserProfile
 import com.example.mymusicapplication.toJson
+import kotlin.concurrent.thread
 
 private const val TAG = "ShowAllPage"
 
@@ -74,6 +76,11 @@ fun ShowAll(userProfile: UserProfile, context: Context) {
                 Log.d(TAG, "ShowAll: $jsonData")
                 val clip = ClipData.newPlainText("label", jsonData)
                 clipboard.setPrimaryClip(clip)
+                val userDao = AppDataBase.getDatabase(context).userDao()
+                thread {
+                    userProfile.id = userDao.insert(userProfile)
+                }
+
             }) {
                 Text(text = "确定")
             }

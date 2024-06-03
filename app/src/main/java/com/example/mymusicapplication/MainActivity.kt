@@ -38,7 +38,7 @@ class DataActivity : AppCompatActivity() {
         super.onCreate(savedInstanceState)
         enableEdgeToEdge()
         val userDao=AppDataBase.getDatabase(this).userDao()
-        val profile=userDao.loadAllUsers()
+        val profile=userDao.loadAllUsers()[0]//不清楚没有会不会报错
         setContent {
             MyMusicApplicationTheme {
                 Box(
@@ -46,7 +46,7 @@ class DataActivity : AppCompatActivity() {
                     modifier = Modifier.fillMaxSize(),
                 ) {
                     var havingProfile by remember {
-                        mutableStateOf(false)
+                        mutableStateOf(profile != UserProfile())
                     }
                     if (havingProfile) {
                         MainPage()
