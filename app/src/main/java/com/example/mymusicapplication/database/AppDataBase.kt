@@ -1,11 +1,12 @@
-package com.example.mymusicapplication
+package com.example.mymusicapplication.database
 
 import android.content.Context
 import androidx.room.Database
 import androidx.room.Room
 import androidx.room.RoomDatabase
+import com.example.mymusicapplication.JSONData
 
-@Database(version = 1, entities = [UserProfile::class])
+@Database(version = 1, entities = [JSONData::class], exportSchema = false)
 abstract class AppDataBase : RoomDatabase() {
     abstract fun userDao(): ProfileDuo
 
@@ -23,5 +24,6 @@ abstract class AppDataBase : RoomDatabase() {
                 "app_database"
             ).build().apply { instance = this }
         }
+
     }
 }

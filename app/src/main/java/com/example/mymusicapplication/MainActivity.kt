@@ -4,7 +4,6 @@ import android.annotation.SuppressLint
 import android.content.ClipboardManager
 import android.content.Context
 import android.os.Bundle
-import android.util.Log
 import androidx.activity.compose.setContent
 import androidx.activity.enableEdgeToEdge
 import androidx.appcompat.app.AppCompatActivity
@@ -25,20 +24,25 @@ import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.platform.LocalContext
+import com.example.mymusicapplication.database.AppDataBase
+import com.example.mymusicapplication.database.fromJson
 import com.example.mymusicapplication.ui.page.MainPage
 import com.example.mymusicapplication.ui.page.UserConfigurationInitializationPage
 import com.example.mymusicapplication.ui.theme.MyMusicApplicationTheme
+import kotlinx.coroutines.CoroutineScope
+import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.async
+import kotlinx.coroutines.launch
+import kotlinx.coroutines.withContext
 
-private const val TAG = "MainActivity"
 
 class DataActivity : AppCompatActivity() {
 
     @SuppressLint("UnusedMaterial3ScaffoldPaddingParameter")
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
+        val profile = checkDataBase(this)
         enableEdgeToEdge()
-        val userDao=AppDataBase.getDatabase(this).userDao()
-        val profile=userDao.loadAllUsers()[0]//不清楚没有会不会报错
         setContent {
             MyMusicApplicationTheme {
                 Box(
@@ -46,7 +50,9 @@ class DataActivity : AppCompatActivity() {
                     modifier = Modifier.fillMaxSize(),
                 ) {
                     var havingProfile by remember {
-                        mutableStateOf(profile != UserProfile())
+                        mutableStateOf(
+                            profile != UserProfile()
+                        )
                     }
                     if (havingProfile) {
                         MainPage()
@@ -67,14 +73,7 @@ fun checkClipBoard(context: Context): UserProfile {
         val item = clipData?.getItemAt(0)
         item?.text.toString()
     } else null
-    if (!text.isNullOrEmpty()) {
-        val temp = fromJson(text)
-        Log.d(TAG, "checkClipBoard: have data")
-        return temp
-    } else {
-        Log.d(TAG, "checkClipBoard: no data")
-        return UserProfile()
-    }
+    return toProfile(text)
 }
 
 sealed interface State {
@@ -165,8 +164,14 @@ fun DialogForNewProfile(openDialog: Boolean, confirm: () -> Unit, onDismissReque
 fun GetProfile(confirm: () -> Unit) {
     val context = LocalContext.current
     val tempProfile = checkClipBoard(context)
-    if (tempProfile != UserProfile()) {
-        DialogForHavingProfile(true, confirm = {}, onDismissRequest = {})
+    var havingInClipBoard by remember { mutableStateOf(tempProfile != UserProfile()) }
+    if (havingInClipBoard) {
+        DialogForHavingProfile(true, confirm = {
+            insertDataBase(context, tempProfile)
+            havingInClipBoard = false
+        }, onDismissRequest = {
+            havingInClipBoard = false
+        })
     }
     var confirmed by remember { mutableStateOf(false) }
     var openNewDialog by rememberSaveable { mutableStateOf(true) }
@@ -182,7 +187,29 @@ fun GetProfile(confirm: () -> Unit) {
     }
 }
 
+fun checkDataBase(context: Context): UserProfile {
+    val user = AppDataBase.getDatabase(context).userDao()
+    CoroutineScope(Dispatchers.IO).launch {
+        val job = async {
+            return@async user.loadUser()
+        }
+    }
+    return  toProfile(job.await())
+}
+
+fun insertDataBase(context: Context, profile: UserProfile) {
+    val user = AppDataBase.getDatabase(context).userDao()
+    CoroutineScope(Dispatchers.IO).launch {
+        user.insertData(profile, context)
+    }
+}
 
 
-
-
+fun toProfile(JSON: String?): UserProfile {
+    if (!JSON.isNullOrEmpty()) {
+        val temp = fromJson(JSON)
+        return temp
+    } else {
+        return UserProfile()
+    }
+}

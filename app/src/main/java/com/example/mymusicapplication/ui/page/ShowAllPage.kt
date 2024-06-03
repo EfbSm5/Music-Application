@@ -3,7 +3,6 @@ package com.example.mymusicapplication.ui.page
 import android.content.ClipData
 import android.content.ClipboardManager
 import android.content.Context
-import android.util.Log
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.size
@@ -16,10 +15,12 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.unit.dp
 import coil.compose.AsyncImage
-import com.example.mymusicapplication.AppDataBase
+import com.example.mymusicapplication.database.AppDataBase
 import com.example.mymusicapplication.UserProfile
-import com.example.mymusicapplication.toJson
-import kotlin.concurrent.thread
+import com.example.mymusicapplication.database.toJson
+import kotlinx.coroutines.CoroutineScope
+import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.launch
 
 private const val TAG = "ShowAllPage"
 
@@ -70,21 +71,22 @@ fun ShowAll(userProfile: UserProfile, context: Context) {
         }
         item {
             Button(onClick = {
-                val jsonData = toJson(userProfile)
-                val clipboard =
-                    context.getSystemService(Context.CLIPBOARD_SERVICE) as ClipboardManager
-                Log.d(TAG, "ShowAll: $jsonData")
-                val clip = ClipData.newPlainText("label", jsonData)
-                clipboard.setPrimaryClip(clip)
-                val userDao = AppDataBase.getDatabase(context).userDao()
-                thread {
-                    userProfile.id = userDao.insert(userProfile)
-                }
-
+                uploadData(context, userProfile)
             }) {
                 Text(text = "确定")
             }
         }
 
+    }
+}
+
+fun uploadData(context: Context, userProfile: UserProfile) {
+    val jsonData = toJson(userProfile)
+    val clipboard = context.getSystemService(Context.CLIPBOARD_SERVICE) as ClipboardManager
+    val clip = ClipData.newPlainText("label", jsonData)
+    clipboard.setPrimaryClip(clip)
+    val userDao = AppDataBase.getDatabase(context).userDao()
+    CoroutineScope(Dispatchers.IO).launch {
+        userDao.insertData(userProfile, context)
     }
 }

@@ -1,6 +1,7 @@
-package com.example.mymusicapplication
+package com.example.mymusicapplication.database
 
 import android.util.Log
+import com.example.mymusicapplication.UserProfile
 import com.squareup.moshi.FromJson
 import com.squareup.moshi.JsonAdapter
 import com.squareup.moshi.JsonDataException

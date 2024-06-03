@@ -21,6 +21,7 @@ android {
         }
     }
 
+
     buildTypes {
         release {
             isMinifyEnabled = false
@@ -83,8 +84,8 @@ dependencies {
     implementation("androidx.compose.ui:ui:1.6.7")
     implementation("androidx.compose.material:material:1.6.7")
     implementation("androidx.compose.ui:ui-tooling-preview:1.6.7")
-    implementation(libs.androidx.lifecycle.runtime.ktx.v251)
-    implementation(libs.androidx.activity.compose.v170)
+    implementation("androidx.lifecycle:lifecycle-runtime-ktx:2.5.1")
+    implementation("androidx.activity:activity-compose:1.7.0")
     implementation("com.google.accompanist:accompanist-permissions:0.34.0")
     implementation("io.coil-kt:coil-compose:2.6.0")
     implementation("org.jetbrains.kotlinx:kotlinx-serialization-json:1.7.0-RC")
