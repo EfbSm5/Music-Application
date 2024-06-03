@@ -37,6 +37,8 @@ class DataActivity : AppCompatActivity() {
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         enableEdgeToEdge()
+        val userDao=AppDataBase.getDatabase(this).userDao()
+        val profile=userDao.loadAllUsers()
         setContent {
             MyMusicApplicationTheme {
                 Box(
