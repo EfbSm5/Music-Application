@@ -33,7 +33,7 @@ abstract class AppDataBase : RoomDatabase() {
 
     }
 }
-suspend fun checkDataBase(context: Context): UserProfile {
+suspend fun checkDataBase(context: Context): UserProfile? {
     return suspendCoroutine { continuation ->
         CoroutineScope(Dispatchers.IO).launch {
             val user = AppDataBase.getDatabase(context).userDao().loadUser()
@@ -51,11 +51,11 @@ fun insertDataBase(context: Context, profile: UserProfile) {
 }
 
 
-fun toProfile(JSON: String?): UserProfile {
+fun toProfile(JSON: String?): UserProfile? {
     if (!JSON.isNullOrEmpty()) {
         val temp = fromJson(JSON)
         return temp
     } else {
-        return UserProfile()
+        return null
     }
 }

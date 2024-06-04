@@ -81,6 +81,7 @@ dependencies {
     // If you want to additionally use the CameraX VideoCapture library
     implementation("androidx.camera:camera-view:${camerax_version}")
     // If you want to additionally add CameraX ML Kit Vision Integration
+    implementation("androidx.navigation:navigation-compose:2.4.0-alpha10")
     implementation("androidx.compose.ui:ui:1.6.7")
     implementation("androidx.compose.material:material:1.6.7")
     implementation("androidx.compose.ui:ui-tooling-preview:1.6.7")
@@ -96,8 +97,8 @@ dependencies {
     implementation("androidx.room:room-runtime:$room_version")
     kapt("androidx.room:room-compiler:$room_version")
     implementation("androidx.room:room-ktx:$room_version")
-    implementation ("org.jetbrains.kotlinx:kotlinx-coroutines-core:1.9.0-RC")
-    implementation ("org.jetbrains.kotlinx:kotlinx-coroutines-android:1.9.0-RC")
+    implementation("org.jetbrains.kotlinx:kotlinx-coroutines-core:1.9.0-RC")
+    implementation("org.jetbrains.kotlinx:kotlinx-coroutines-android:1.9.0-RC")
 }
 
 

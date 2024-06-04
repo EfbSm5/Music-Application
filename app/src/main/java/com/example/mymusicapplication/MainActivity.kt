@@ -40,7 +40,6 @@ class DataActivity : AppCompatActivity() {
     @SuppressLint("UnusedMaterial3ScaffoldPaddingParameter")
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
-        val profile = runBlocking { checkDataBase(applicationContext) }
         enableEdgeToEdge()
         setContent {
             MyMusicApplicationTheme {
@@ -48,53 +47,138 @@ class DataActivity : AppCompatActivity() {
                     contentAlignment = Alignment.Center,
                     modifier = Modifier.fillMaxSize(),
                 ) {
-                    Display(profile = profile)
+                    Display()
                 }
             }
         }
 
     }
-}
 
-@Composable
-fun Display(profile: UserProfile) {
-    var havingProfile by remember {
-        mutableStateOf(
-            profile != UserProfile()
-        )
+    @Composable
+    private fun Display() {
+        var checkedClipBoard by remember { mutableStateOf(false) }
+        val profile = runBlocking { checkDataBase(applicationContext) }
+        var havingProfile by remember { mutableStateOf(profile != null) }
+        CheckClipBoard(LocalContext.current) { checkedClipBoard = true }
+        if (checkedClipBoard) {
+            if (havingProfile) {
+                ShowAll(profile!!, LocalContext.current)
+            } else {
+                GetProfile { havingProfile = true }
+            }
+        }
     }
-    CheckClipBoard(LocalContext.current)
-    if (havingProfile) {
-        ShowAll(profile, LocalContext.current)
-    } else {
-        GetProfile { havingProfile = true }
-    }
-}
 
-@Composable
-fun CheckClipBoard(context: Context) {
-    val clipboard = context.getSystemService(Context.CLIPBOARD_SERVICE) as ClipboardManager
-    val userProfile: UserProfile = if (clipboard.hasPrimaryClip()) {
-        val clipData = clipboard.primaryClip
-        val item = clipData?.getItemAt(0)
-        toProfile(item?.text.toString())
-    } else UserProfile()
-    var havingInClipBoard by remember { mutableStateOf(userProfile != UserProfile()) }
-    var inserted by remember { mutableStateOf(false) }
-    Log.d(TAG, "GetProfile:                                         $havingInClipBoard")
-    if (havingInClipBoard) {
-        DialogForHavingProfile(true, confirm = {
-            insertDataBase(context, userProfile)
-            inserted = true
-            havingInClipBoard = false
+    @Composable
+    private fun CheckClipBoard(context: Context, noData: () -> Unit) {
+        val clipboard = context.getSystemService(Context.CLIPBOARD_SERVICE) as ClipboardManager
+        val userProfile: UserProfile? = if (clipboard.hasPrimaryClip()) {
+            val clipData = clipboard.primaryClip
+            val item = clipData?.getItemAt(0)
+            toProfile(item?.text.toString())
+        } else null
+        var havingInClipBoard by remember { mutableStateOf(userProfile != null) }
+        var inserted by remember { mutableStateOf(false) }
+        Log.d(TAG, "GetProfile:                                         $havingInClipBoard")
+        if (havingInClipBoard) {
+            DialogForHavingProfile(true, confirm = {
+                insertDataBase(context, userProfile!!)
+                inserted = true
+                havingInClipBoard = false
+            }, onDismissRequest = {
+                havingInClipBoard = false
+            })
+        } else {
+            noData()
+        }
+        if (inserted) {
+            ShowAll(userProfile = userProfile!!, context = context)
+        }
+    }
+
+    @Composable
+    private fun DialogForHavingProfile(
+        openDialog: Boolean, confirm: () -> Unit, onDismissRequest: () -> Unit
+    ) {
+        if (openDialog) {
+            AlertDialog(onDismissRequest = onDismissRequest,
+                icon = { Icon(Icons.Filled.Edit, contentDescription = null) },
+                title = {
+                    Text(text = "我们发现你的剪切板有我们想要的数据")
+                },
+                text = {
+                    Text(
+                        "想要直接导入吗"
+                    )
+                },
+                confirmButton = {
+                    TextButton(onClick = {
+                        confirm()
+                    }) {
+                        Text("我没意见")
+                    }
+                },
+                dismissButton = {
+                    TextButton(onClick = {
+                        onDismissRequest()
+                    }) {
+                        Text("我有意见")
+                    }
+                })
+        }
+    }
+
+    @Composable
+    private fun DialogForNewProfile(
+        openDialog: Boolean, confirm: () -> Unit, onDismissRequest: () -> Unit
+    ) {
+        if (openDialog) {
+            AlertDialog(onDismissRequest = onDismissRequest,
+                icon = { Icon(Icons.Filled.Edit, contentDescription = null) },
+                title = {
+                    Text(text = "欢迎使用Music App")
+                },
+                text = {
+                    Text(
+                        "我们发现你尚未注册，想要让我们获取你的个人信息吗"
+                    )
+                },
+                confirmButton = {
+                    TextButton(onClick = {
+                        confirm()
+                    }) {
+                        Text("我没意见")
+                    }
+                },
+                dismissButton = {
+                    TextButton(onClick = {
+                        onDismissRequest()
+                    }) {
+                        Text("我有意见")
+                    }
+                })
+        }
+    }
+
+
+    @SuppressLint("UnusedMaterial3ScaffoldPaddingParameter")
+    @Composable
+    private fun GetProfile(confirm: () -> Unit) {
+        var confirmed by remember { mutableStateOf(false) }
+        var openNewDialog by rememberSaveable { mutableStateOf(true) }
+        DialogForNewProfile(openDialog = openNewDialog, confirm = {
+            confirmed = true
+            openNewDialog = false
         }, onDismissRequest = {
-            havingInClipBoard = false
+            openNewDialog = false
+            confirm()
         })
-    }
-    if (inserted) {
-        ShowAll(userProfile = userProfile, context = context)
+        if (confirmed) {
+            UserConfigurationInitializationPage()
+        }
     }
 }
+
 
 sealed interface State {
     data object Name : State
@@ -116,85 +200,7 @@ sealed interface State {
     }
 }
 
-@Composable
-fun DialogForHavingProfile(
-    openDialog: Boolean, confirm: () -> Unit, onDismissRequest: () -> Unit
-) {
-    if (openDialog) {
-        AlertDialog(onDismissRequest = onDismissRequest,
-            icon = { Icon(Icons.Filled.Edit, contentDescription = null) },
-            title = {
-                Text(text = "我们发现你的剪切板有我们想要的数据")
-            },
-            text = {
-                Text(
-                    "想要直接导入吗"
-                )
-            },
-            confirmButton = {
-                TextButton(onClick = {
-                    confirm()
-                }) {
-                    Text("我没意见")
-                }
-            },
-            dismissButton = {
-                TextButton(onClick = {
-                    onDismissRequest()
-                }) {
-                    Text("我有意见")
-                }
-            })
-    }
-}
 
-@Composable
-fun DialogForNewProfile(openDialog: Boolean, confirm: () -> Unit, onDismissRequest: () -> Unit) {
-    if (openDialog) {
-        AlertDialog(onDismissRequest = onDismissRequest,
-            icon = { Icon(Icons.Filled.Edit, contentDescription = null) },
-            title = {
-                Text(text = "欢迎使用Music App")
-            },
-            text = {
-                Text(
-                    "我们发现你尚未注册，想要让我们获取你的个人信息吗"
-                )
-            },
-            confirmButton = {
-                TextButton(onClick = {
-                    confirm()
-                }) {
-                    Text("我没意见")
-                }
-            },
-            dismissButton = {
-                TextButton(onClick = {
-                    onDismissRequest()
-                }) {
-                    Text("我有意见")
-                }
-            })
-    }
-}
-
-
-@SuppressLint("UnusedMaterial3ScaffoldPaddingParameter")
-@Composable
-fun GetProfile(confirm: () -> Unit) {
-    var confirmed by remember { mutableStateOf(false) }
-    var openNewDialog by rememberSaveable { mutableStateOf(true) }
-    DialogForNewProfile(openDialog = openNewDialog, confirm = {
-        confirmed = true
-        openNewDialog = false
-    }, onDismissRequest = {
-        openNewDialog = false
-        confirm()
-    })
-    if (confirmed) {
-        UserConfigurationInitializationPage()
-    }
-}
 
 
 
