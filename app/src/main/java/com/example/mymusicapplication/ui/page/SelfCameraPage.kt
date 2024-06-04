@@ -91,6 +91,7 @@ fun takePhoto(
             "yyyy-MM-dd-HH-mm-ss-SSS", Locale.US
         ).format(System.currentTimeMillis()) + ".jpg"
     )
+
     val outputOptions = ImageCapture.OutputFileOptions.Builder(photoFile).build()
 
     imageCapture.takePicture(/* outputFileOptions = */ outputOptions,/* executor = */

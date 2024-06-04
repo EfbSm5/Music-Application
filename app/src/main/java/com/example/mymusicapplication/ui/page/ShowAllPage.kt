@@ -4,6 +4,7 @@ import android.content.ClipData
 import android.content.ClipboardManager
 import android.content.Context
 import androidx.compose.foundation.layout.Arrangement
+import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.lazy.LazyColumn
@@ -22,7 +23,6 @@ import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
 
-private const val TAG = "ShowAllPage"
 
 @Composable
 fun ShowAll(userProfile: UserProfile, context: Context) {
@@ -46,27 +46,27 @@ fun ShowAll(userProfile: UserProfile, context: Context) {
             }
         }
         item {
-            LazyRow {
-                item { Text(text = "性别:") }
-                item { Text(text = userProfile.sex) }
+            Row {
+                Text(text = "性别:")
+                Text(text = userProfile.sex)
             }
         }
         item {
-            LazyRow {
-                item { Text(text = "出生日期:") }
-                item { Text(text = userProfile.birthDay) }
+            Row {
+                Text(text = "出生日期:")
+                Text(text = userProfile.birthDay)
             }
         }
         item {
-            LazyRow {
-                item { Text(text = "喜好:") }
-                item {
-                    if (userProfile.preference.isEmpty()) {
-                        Text(text = "无")
-                    } else {
-                        Text(text = userProfile.preference.joinToString(separator = " "))
-                    }
+            Row {
+                Text(text = "喜好:")
+
+                if (userProfile.preference.isEmpty()) {
+                    Text(text = "无")
+                } else {
+                    Text(text = userProfile.preference.joinToString(separator = " "))
                 }
+
             }
         }
         item {
@@ -76,7 +76,6 @@ fun ShowAll(userProfile: UserProfile, context: Context) {
                 Text(text = "确定")
             }
         }
-
     }
 }
 
