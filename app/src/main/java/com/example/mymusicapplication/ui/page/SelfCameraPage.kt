@@ -117,7 +117,7 @@ fun PhotoScreen(onPhotoConfirmed: (File) -> Unit, onNavigateToNextScreen: () -> 
 
     val cameraPermissionState = rememberPermissionState(android.Manifest.permission.CAMERA)
 
-    LaunchedEffect(cameraPermissionState) {
+    LaunchedEffect(cameraPermissionState.status) {
         if (!cameraPermissionState.status.isGranted) {
             cameraPermissionState.launchPermissionRequest()
         } else {

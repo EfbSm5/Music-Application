@@ -15,6 +15,13 @@ import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.platform.LocalContext
+import androidx.compose.ui.tooling.preview.Preview
+
+@Preview
+@Composable
+fun PreviewEditName() {
+    EditName(onNameConfirmed = {})
+}
 
 @Composable
 fun EditName(onNameConfirmed: (String) -> Unit, onNavigateToNextScreen: () -> Unit = {}) {

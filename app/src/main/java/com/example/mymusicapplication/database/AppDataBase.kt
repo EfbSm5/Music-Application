@@ -9,8 +9,6 @@ import com.example.mymusicapplication.UserProfile
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
-import kotlin.coroutines.resume
-import kotlin.coroutines.suspendCoroutine
 
 @Database(version = 1, entities = [JSONData::class], exportSchema = false)
 abstract class AppDataBase : RoomDatabase() {
@@ -25,21 +23,16 @@ abstract class AppDataBase : RoomDatabase() {
                 return it
             }
             return Room.databaseBuilder(
-                context.applicationContext,
-                AppDataBase::class.java,
-                "app_database"
+                context.applicationContext, AppDataBase::class.java, "app_database"
             ).build().apply { instance = this }
         }
 
     }
 }
-suspend fun checkDataBase(context: Context): UserProfile? {
-    return suspendCoroutine { continuation ->
-        CoroutineScope(Dispatchers.IO).launch {
-            val user = AppDataBase.getDatabase(context).userDao().loadUser()
-            continuation.resume(toProfile(user))
-        }
-    }
+
+fun checkDataBase(context: Context, userProfile: (UserProfile?) -> Unit) {
+    val user = AppDataBase.getDatabase(context).userDao().loadUser()
+    userProfile(toProfile(user))
 }
 
 
@@ -51,11 +44,10 @@ fun insertDataBase(context: Context, profile: UserProfile) {
 }
 
 
-fun toProfile(JSON: String?): UserProfile? {
-    if (!JSON.isNullOrEmpty()) {
-        val temp = fromJson(JSON)
-        return temp
+fun toProfile(jsonData: String?): UserProfile? {
+    return if (jsonData.isNullOrEmpty()) {
+        null
     } else {
-        return null
+        fromJson(jsonData)
     }
 }

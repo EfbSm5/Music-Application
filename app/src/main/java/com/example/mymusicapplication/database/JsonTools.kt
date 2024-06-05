@@ -21,18 +21,18 @@ fun toJson(userProfile: UserProfile): String {
     return json
 }
 
-fun fromJson(json: String): UserProfile {
+fun fromJson(json: String): UserProfile? {
     val moshi =
         Moshi.Builder().add(KotlinJsonAdapterFactory()).add(File::class.java, fileAdapter).build()
     val userAdapter = moshi.adapter(UserProfile::class.java)
     try {
-        return userAdapter.fromJson(json) ?: UserProfile()
+        return userAdapter.fromJson(json)
     } catch (e: JsonDataException) {
         Log.d(TAG, "fromJson: JsonDataException", e)
-        return UserProfile()
+        return null
     } catch (e: Exception) {
         Log.d(TAG, "fromJson: Exception", e)
-        return UserProfile()
+        return null
     }
 }
 

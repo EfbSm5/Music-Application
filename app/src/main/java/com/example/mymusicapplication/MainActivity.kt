@@ -4,7 +4,6 @@ import android.annotation.SuppressLint
 import android.content.ClipboardManager
 import android.content.Context
 import android.os.Bundle
-import android.util.Log
 import androidx.activity.compose.setContent
 import androidx.activity.enableEdgeToEdge
 import androidx.appcompat.app.AppCompatActivity
@@ -17,9 +16,11 @@ import androidx.compose.material3.Icon
 import androidx.compose.material3.Text
 import androidx.compose.material3.TextButton
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
+import androidx.compose.runtime.rememberCoroutineScope
 import androidx.compose.runtime.saveable.rememberSaveable
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
@@ -31,7 +32,8 @@ import com.example.mymusicapplication.database.toProfile
 import com.example.mymusicapplication.ui.page.ShowAll
 import com.example.mymusicapplication.ui.page.UserConfigurationInitializationPage
 import com.example.mymusicapplication.ui.theme.MyMusicApplicationTheme
-import kotlinx.coroutines.runBlocking
+import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.launch
 
 private const val TAG = "MainActivity"
 
@@ -56,44 +58,46 @@ class DataActivity : AppCompatActivity() {
 
     @Composable
     private fun Display() {
-        var checkedClipBoard by remember { mutableStateOf(false) }
-        val profile = runBlocking { checkDataBase(applicationContext) }
-        var havingProfile by remember { mutableStateOf(profile != null) }
-        CheckClipBoard(LocalContext.current) { checkedClipBoard = true }
-        if (checkedClipBoard) {
-            if (havingProfile) {
-                ShowAll(profile!!, LocalContext.current)
-            } else {
-                GetProfile { havingProfile = true }
+        var profileInDataBase by remember { mutableStateOf<UserProfile?>(null) }
+        var profileInClipBoard by remember { mutableStateOf<UserProfile?>(null) }
+        var openDialogForClipBoard by remember { mutableStateOf(true) }
+        val coroutineScope = rememberCoroutineScope()
+        val context = LocalContext.current
+        LaunchedEffect(Unit) {
+            coroutineScope.launch(Dispatchers.IO) {
+                checkDataBase(context) { profileInDataBase = it }
             }
+        }
+        LaunchedEffect(Unit) {
+            coroutineScope.launch(Dispatchers.IO) {
+                checkClipBoard(context) { profileInClipBoard = it }
+            }
+        }
+        if (profileInDataBase != null) {
+            ShowAll(profileInDataBase!!, LocalContext.current)
+        } else {
+            GetProfile { profileInDataBase = UserProfile() }
+        }
+        if (profileInClipBoard != null && profileInClipBoard != profileInDataBase) {
+            DialogForHavingProfile(openDialogForClipBoard, confirm = {
+                insertDataBase(context, profileInClipBoard!!)
+                profileInDataBase = profileInClipBoard
+                openDialogForClipBoard = false
+            }, onDismissRequest = {
+                openDialogForClipBoard = false
+            })
         }
     }
 
-    @Composable
-    private fun CheckClipBoard(context: Context, noData: () -> Unit) {
+    private fun checkClipBoard(context: Context, getUserProfile: (UserProfile?) -> Unit) {
         val clipboard = context.getSystemService(Context.CLIPBOARD_SERVICE) as ClipboardManager
-        val userProfile: UserProfile? = if (clipboard.hasPrimaryClip()) {
-            val clipData = clipboard.primaryClip
-            val item = clipData?.getItemAt(0)
-            toProfile(item?.text.toString())
-        } else null
-        var havingInClipBoard by remember { mutableStateOf(userProfile != null) }
-        var inserted by remember { mutableStateOf(false) }
-        Log.d(TAG, "GetProfile:                                         $havingInClipBoard")
-        if (havingInClipBoard) {
-            DialogForHavingProfile(true, confirm = {
-                insertDataBase(context, userProfile!!)
-                inserted = true
-                havingInClipBoard = false
-            }, onDismissRequest = {
-                havingInClipBoard = false
-            })
-        } else {
-            noData()
-        }
-        if (inserted) {
-            ShowAll(userProfile = userProfile!!, context = context)
-        }
+        getUserProfile(
+            if (clipboard.hasPrimaryClip()) {
+                val clipData = clipboard.primaryClip
+                val item = clipData?.getItemAt(0)
+                toProfile(item?.text.toString())
+            } else null
+        )
     }
 
     @Composable
@@ -163,7 +167,7 @@ class DataActivity : AppCompatActivity() {
 
     @SuppressLint("UnusedMaterial3ScaffoldPaddingParameter")
     @Composable
-    private fun GetProfile(confirm: () -> Unit) {
+    private fun GetProfile(dismiss: () -> Unit) {
         var confirmed by remember { mutableStateOf(false) }
         var openNewDialog by rememberSaveable { mutableStateOf(true) }
         DialogForNewProfile(openDialog = openNewDialog, confirm = {
@@ -171,7 +175,7 @@ class DataActivity : AppCompatActivity() {
             openNewDialog = false
         }, onDismissRequest = {
             openNewDialog = false
-            confirm()
+            dismiss()
         })
         if (confirmed) {
             UserConfigurationInitializationPage()
@@ -180,7 +184,7 @@ class DataActivity : AppCompatActivity() {
 }
 
 
-sealed interface State {
+interface State {
     data object Name : State
     data object Sex : State
     data object Birthday : State
