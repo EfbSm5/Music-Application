@@ -16,13 +16,17 @@ import androidx.compose.runtime.remember
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.unit.dp
+import androidx.navigation.NavController
+import com.example.mymusicapplication.EditUserProfileViewModel
 import com.example.mymusicapplication.QuestionsAndAnswers
+import com.example.mymusicapplication.lastScreen
+import com.example.mymusicapplication.nextScreen
 
 @Composable
-fun SelectPreference(
+fun EditPreference(
     questionsAndAnswers: QuestionsAndAnswers,
-    onPreferenceConfirmed: (List<String>) -> Unit,
-    onNavigateToNextScreen: () -> Unit = {}
+    viewModel: EditUserProfileViewModel,
+    navController: NavController
 ) {
     val selectedOptions = remember { mutableStateListOf<String>() }
     LazyColumn(
@@ -51,11 +55,18 @@ fun SelectPreference(
             }
         }
         item {
-            Button(onClick = {
-                onPreferenceConfirmed(selectedOptions)
-                onNavigateToNextScreen()
-            }) {
-                Text(text = "确定")
+            Row {
+                Button(onClick = {
+                    viewModel.updatePreferences(selectedOptions)
+                    nextScreen(navController)
+                }) {
+                    Text(text = "确定")
+                }
+                Button(onClick = {
+                    lastScreen(navController)
+                }) {
+                    Text(text = "返回")
+                }
             }
         }
     }

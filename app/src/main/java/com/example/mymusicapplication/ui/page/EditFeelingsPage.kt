@@ -1,6 +1,7 @@
 package com.example.mymusicapplication.ui.page
 
 import androidx.compose.foundation.layout.Arrangement
+import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.LazyRow
@@ -14,9 +15,13 @@ import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.navigation.NavController
+import com.example.mymusicapplication.EditUserProfileViewModel
+import com.example.mymusicapplication.lastScreen
+import com.example.mymusicapplication.nextScreen
 
 @Composable
-fun GetFeelings(onEmotionConfirmed: (Float) -> Unit, onNavigateToNextScreen: () -> Unit = {}) {
+fun EditEmotion(viewModel: EditUserProfileViewModel, navController: NavController) {
     var feeling by remember { mutableFloatStateOf(0.0F) }
     LazyColumn(
         modifier = Modifier.fillMaxWidth(),
@@ -37,11 +42,18 @@ fun GetFeelings(onEmotionConfirmed: (Float) -> Unit, onNavigateToNextScreen: () 
             }
         }
         item {
-            Button(onClick = {
-                onEmotionConfirmed(feeling)
-                onNavigateToNextScreen()
-            }) {
-                Text(text = "确定")
+            Row {
+                Button(onClick = {
+                    viewModel.updateEmotion(feeling)
+                    nextScreen(navController)
+                }) {
+                    Text(text = "确定")
+                }
+                Button(onClick = {
+                    lastScreen(navController)
+                }) {
+                    Text(text = "返回")
+                }
             }
         }
 

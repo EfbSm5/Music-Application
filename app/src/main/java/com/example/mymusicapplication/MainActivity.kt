@@ -30,12 +30,10 @@ import com.example.mymusicapplication.database.checkDataBase
 import com.example.mymusicapplication.database.insertDataBase
 import com.example.mymusicapplication.database.toProfile
 import com.example.mymusicapplication.ui.page.ShowAll
-import com.example.mymusicapplication.ui.page.UserConfigurationInitializationPage
 import com.example.mymusicapplication.ui.theme.MyMusicApplicationTheme
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
 
-private const val TAG = "MainActivity"
 
 class DataActivity : AppCompatActivity() {
 
@@ -94,8 +92,10 @@ class DataActivity : AppCompatActivity() {
         getUserProfile(
             if (clipboard.hasPrimaryClip()) {
                 val clipData = clipboard.primaryClip
-                val item = clipData?.getItemAt(0)
-                toProfile(item?.text.toString())
+                if (clipData != null) {
+                    val item = clipData.getItemAt(0)
+                    toProfile(item.text.toString())
+                } else null
             } else null
         )
     }
@@ -178,31 +178,15 @@ class DataActivity : AppCompatActivity() {
             dismiss()
         })
         if (confirmed) {
-            UserConfigurationInitializationPage()
+            val viewModel = EditUserProfileViewModel()
+            SurveyNavGraph(viewModel)
         }
     }
 }
 
 
-interface State {
-    data object Name : State
-    data object Sex : State
-    data object Birthday : State
-    data object Preference : State
-    data object FloatValue : State
-    data object Avatar : State
-    data object Data : State
-    data object Undefined : State
 
-    companion object {
-        private val list =
-            listOf(Name, Sex, Birthday, Preference, FloatValue, Avatar, Data, Undefined)
-    }
 
-    fun nextScreen(): State {
-        return list[list.indexOf(this) + 1]
-    }
-}
 
 
 

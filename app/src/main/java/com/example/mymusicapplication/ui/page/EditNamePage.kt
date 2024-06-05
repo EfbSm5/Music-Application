@@ -16,15 +16,18 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.tooling.preview.Preview
+import androidx.navigation.NavController
+import com.example.mymusicapplication.EditUserProfileViewModel
+import com.example.mymusicapplication.nextScreen
 
 @Preview
 @Composable
 fun PreviewEditName() {
-    EditName(onNameConfirmed = {})
+
 }
 
 @Composable
-fun EditName(onNameConfirmed: (String) -> Unit, onNavigateToNextScreen: () -> Unit = {}) {
+fun EditName(viewModel: EditUserProfileViewModel, navController: NavController) {
     var name by remember { mutableStateOf("") }
     val context = LocalContext.current
     LazyColumn(
@@ -41,12 +44,12 @@ fun EditName(onNameConfirmed: (String) -> Unit, onNavigateToNextScreen: () -> Un
         item {
             Button(onClick = {
                 if (name.isNotEmpty()) {
-                    onNameConfirmed(name)
-                    onNavigateToNextScreen()
+                    viewModel.updateName("Example Name")
+                    nextScreen(navController)
                 } else {
                     Toast.makeText(context, "使用默认昵称", Toast.LENGTH_SHORT).show()
-                    onNameConfirmed("默认昵称")
-                    onNavigateToNextScreen()
+                    viewModel.updateName("默认昵称")
+                    nextScreen(navController)
                 }
             }) {
                 Text(text = "下一题")

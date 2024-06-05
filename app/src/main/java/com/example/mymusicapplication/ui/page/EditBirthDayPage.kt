@@ -2,7 +2,9 @@ package com.example.mymusicapplication.ui.page
 
 import android.annotation.SuppressLint
 import android.app.DatePickerDialog
+import android.inputmethodservice.Keyboard
 import androidx.compose.foundation.layout.Arrangement
+import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
@@ -18,12 +20,16 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.unit.dp
+import androidx.navigation.NavController
+import com.example.mymusicapplication.EditUserProfileViewModel
+import com.example.mymusicapplication.lastScreen
+import com.example.mymusicapplication.nextScreen
 import java.text.SimpleDateFormat
 import java.util.Calendar
 
 @SuppressLint("SimpleDateFormat")
 @Composable
-fun GetBirthDay(onBirthdayConfirmed: (String) -> Unit, onNavigateToNextScreen: () -> Unit = {}) {
+fun EditBirthDay(viewModel: EditUserProfileViewModel, navController: NavController) {
 
     var selectedDate by remember { mutableStateOf(Calendar.getInstance()) }
     val context = LocalContext.current
@@ -47,17 +53,22 @@ fun GetBirthDay(onBirthdayConfirmed: (String) -> Unit, onNavigateToNextScreen: (
             }
         }
         item {
-            Button(onClick = {
-                onBirthdayConfirmed(dataFormat.format(selectedDate.time))
-                onNavigateToNextScreen()
-            }) {
-                Text(text = "确定")
+            Row {
+                Button(onClick = {
+                    viewModel.updateBirthday(dataFormat.format(selectedDate.time))
+                    nextScreen(navController)
+                }) {
+                    Text(text = "确定")
+                }
+                Button(onClick = {
+                    lastScreen(navController)
+                }) {
+                    Text(text = "返回")
+                }
             }
         }
     }
-
 }
-
 
 private fun showDatePicker(
     context: android.content.Context, selectedDate: Calendar, onDateSelected: (Calendar) -> Unit

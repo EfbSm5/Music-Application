@@ -70,22 +70,32 @@ fun ShowAll(userProfile: UserProfile, context: Context) {
             }
         }
         item {
-            Button(onClick = {
-                uploadData(context, userProfile)
-            }) {
-                Text(text = "确定")
+            Row {
+                Button(onClick = {
+                    uploadDataToDataBase(context, userProfile)
+                }) {
+                    Text(text = "确定")
+                }
+                Button(onClick = {
+                    uploadDataToClipBoard(context, userProfile)
+                }) {
+                    Text(text = "输入剪切板")
+                }
             }
         }
     }
 }
 
-fun uploadData(context: Context, userProfile: UserProfile) {
-    val jsonData = toJson(userProfile)
-    val clipboard = context.getSystemService(Context.CLIPBOARD_SERVICE) as ClipboardManager
-    val clip = ClipData.newPlainText("label", jsonData)
-    clipboard.setPrimaryClip(clip)
+fun uploadDataToDataBase(context: Context, userProfile: UserProfile) {
     val userDao = AppDataBase.getDatabase(context).userDao()
     CoroutineScope(Dispatchers.IO).launch {
         userDao.insertData(userProfile, context)
     }
+}
+
+fun uploadDataToClipBoard(context: Context, userProfile: UserProfile) {
+    val jsonData = toJson(userProfile)
+    val clipboard = context.getSystemService(Context.CLIPBOARD_SERVICE) as ClipboardManager
+    val clip = ClipData.newPlainText("label", jsonData)
+    clipboard.setPrimaryClip(clip)
 }

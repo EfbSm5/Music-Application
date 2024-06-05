@@ -11,6 +11,7 @@ import androidx.camera.core.Preview
 import androidx.camera.lifecycle.ProcessCameraProvider
 import androidx.camera.view.PreviewView
 import androidx.compose.foundation.layout.Column
+import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.material3.Button
@@ -27,7 +28,11 @@ import androidx.compose.ui.platform.LocalLifecycleOwner
 import androidx.compose.ui.viewinterop.AndroidView
 import androidx.core.content.ContextCompat
 import androidx.core.net.toFile
+import androidx.navigation.NavController
 import coil.compose.AsyncImage
+import com.example.mymusicapplication.EditUserProfileViewModel
+import com.example.mymusicapplication.lastScreen
+import com.example.mymusicapplication.nextScreen
 import com.google.accompanist.permissions.ExperimentalPermissionsApi
 import com.google.accompanist.permissions.isGranted
 import com.google.accompanist.permissions.rememberPermissionState
@@ -111,9 +116,9 @@ fun takePhoto(
 @OptIn(ExperimentalPermissionsApi::class)
 @SuppressLint("UnusedMaterial3ScaffoldPaddingParameter")
 @Composable
-fun PhotoScreen(onPhotoConfirmed: (File) -> Unit, onNavigateToNextScreen: () -> Unit = {}) {
+fun PhotoScreen(viewModel: EditUserProfileViewModel, navController: NavController) {
 
-    var state: State by remember { mutableStateOf(State.PermissionDenied) }
+    var screen: Screen by remember { mutableStateOf(Screen.PermissionDenied) }
 
     val cameraPermissionState = rememberPermissionState(android.Manifest.permission.CAMERA)
 
@@ -121,48 +126,60 @@ fun PhotoScreen(onPhotoConfirmed: (File) -> Unit, onNavigateToNextScreen: () -> 
         if (!cameraPermissionState.status.isGranted) {
             cameraPermissionState.launchPermissionRequest()
         } else {
-            state = State.Capture
+            screen = Screen.Capture
         }
     }
 
     LazyColumn(modifier = Modifier.fillMaxSize()) {
         item {
-            View(state = state, onImageSaved = { state = State.Success(uri = it) }, onClick = {
-                onPhotoConfirmed(it)
-                onNavigateToNextScreen()
-            })
+            View(screen = screen, onImageSaved = { screen = Screen.Success(uri = it) }, onClick = {
+                viewModel.updateAvatar(it)
+                nextScreen(navController)
+            }, navController)
         }
     }
 }
 
 
 @Composable
-fun View(state: State, onImageSaved: (Uri) -> Unit, onClick: (File) -> Unit) {
+fun View(
+    screen: Screen,
+    onImageSaved: (Uri) -> Unit,
+    onClick: (File) -> Unit,
+    navController: NavController
+) {
 
-    when (state) {
-        State.Capture -> {
+    when (screen) {
+        Screen.Capture -> {
             CameraView(onImageSaved = onImageSaved)
         }
 
-        State.PermissionDenied -> {
+        Screen.PermissionDenied -> {
             Text(text = "no permission")
         }
 
-        is State.Success -> {
-            val savedImage = state.uri.toFile()
+        is Screen.Success -> {
+            val savedImage = screen.uri.toFile()
             AsyncImage(model = savedImage, contentDescription = null)
-            Button(onClick = {
-                onClick(savedImage)
-            }) {
-                Text(text = "确定")
+            Row {
+                Button(onClick = {
+                    onClick(savedImage)
+                }) {
+                    Text(text = "确定")
+                }
+                Button(onClick = {
+                    lastScreen(navController)
+                }) {
+                    Text(text = "返回")
+                }
             }
         }
     }
 }
 
 
-sealed interface State {
-    data object PermissionDenied : State
-    data object Capture : State
-    data class Success(val uri: Uri) : State
+sealed interface Screen {
+    data object PermissionDenied : Screen
+    data object Capture : Screen
+    data class Success(val uri: Uri) : Screen
 }
