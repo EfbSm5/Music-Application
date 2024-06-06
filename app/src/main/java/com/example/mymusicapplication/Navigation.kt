@@ -1,84 +1,47 @@
 package com.example.mymusicapplication
 
 import android.annotation.SuppressLint
+import androidx.compose.foundation.layout.Arrangement
+import androidx.compose.foundation.layout.Box
+import androidx.compose.foundation.layout.Row
+import androidx.compose.foundation.layout.fillMaxWidth
+import androidx.compose.foundation.layout.padding
+import androidx.compose.material.Button
+import androidx.compose.material3.BottomAppBar
+import androidx.compose.material3.ExperimentalMaterial3Api
+import androidx.compose.material3.Scaffold
+import androidx.compose.material3.Text
+import androidx.compose.material3.TopAppBar
 import androidx.compose.runtime.Composable
-import androidx.compose.ui.platform.LocalContext
-import androidx.navigation.NavController
-import androidx.navigation.NavHostController
+import androidx.compose.ui.Alignment
+import androidx.compose.ui.Modifier
 import androidx.navigation.compose.NavHost
 import androidx.navigation.compose.composable
 import androidx.navigation.compose.rememberNavController
-import com.example.mymusicapplication.ui.page.EditBirthDay
-import com.example.mymusicapplication.ui.page.EditEmotion
-import com.example.mymusicapplication.ui.page.EditName
-import com.example.mymusicapplication.ui.page.EditPreference
-import com.example.mymusicapplication.ui.page.EditSex
-import com.example.mymusicapplication.ui.page.PhotoScreen
-import com.example.mymusicapplication.ui.page.ShowAll
-
-val list = listOf(
-    "editName", "editSex", "editBirthday", "editPreferences", "editEmotion", "editAvatar", "summary"
-)
-
-fun nextScreen(navController: NavController) {
-    val currentDestination = navController.currentBackStackEntry?.destination
-    val currentRoute = currentDestination?.route
-    val index = list.indexOf(currentRoute)
-    val nextRoute = if (index in 0 until list.lastIndex) {
-        list[index + 1]
-    } else {
-        null
-    }
-    if (nextRoute != null) {
-        navController.navigate(nextRoute)
-    }
-}
-
-fun lastScreen(navController: NavController) {
-    val currentDestination = navController.currentBackStackEntry?.destination
-    val currentRoute = currentDestination?.route
-    val index = list.indexOf(currentRoute)
-    val lastRoute = if (index in list.indices) {
-        list[index - 1]
-    } else {
-        null
-    }
-    if (lastRoute != null) {
-        navController.navigate(lastRoute)
-    }
-}
-
+import com.example.mymusicapplication.ui.editUserPage.EditProfileContents
+import com.example.mymusicapplication.ui.editUserPage.EditProfileScreen
+import com.example.mymusicapplication.ui.editUserPage.lastScreen
+import com.example.mymusicapplication.ui.editUserPage.nextScreen
+import com.example.mymusicapplication.ui.page.HomeScreen
+import com.example.mymusicapplication.ui.page.Welcome
 
 @SuppressLint("StateFlowValueCalledInComposition")
 @Composable
-fun SurveyNavGraph(navController: NavHostController) {
-    val sexQuestionsAndAnswers = QuestionsAndAnswers("你的性别", listOf("男", "女", "其他"))
-    val preferencesQuestionsAndAnswers = QuestionsAndAnswers(
-        "你听歌的偏好", listOf("民谣", "摇滚", "流行", "说唱", "电子", "ACG", "古典", "爵士")
-    )
-    val viewModel = EditUserProfileViewModel()
-    NavHost(navController, startDestination = "editName") {
-        composable("editName") {
-            EditName { viewModel.updateName(it) }
+fun NavGraph() {
+    val navControllerAtWelcomePage = rememberNavController()
+    NavHost(navControllerAtWelcomePage, startDestination = "WelcomePage") {
+        composable("WelcomePage") {
+            Welcome({ navControllerAtWelcomePage.navigate("EditPage") },
+                { navControllerAtWelcomePage.navigate("HomePage") })
         }
-        composable("editSex") {
-            EditSex(sexQuestionsAndAnswers) { viewModel.updateSex(it) }
+        composable("HomePage") {
+            HomeScreen()
         }
-        composable("editBirthday") {
-            EditBirthDay { viewModel.updateBirthday(it) }
-        }
-        composable("editPreferences") {
-            EditPreference(preferencesQuestionsAndAnswers) { viewModel.updatePreferences(it) }
-        }
-        composable("editEmotion") {
-            EditEmotion { viewModel.updateEmotion(it) }
-        }
-        composable("editAvatar") {
-            PhotoScreen { viewModel.updateAvatar(it) }
-        }
-        composable("summary") {
-            ShowAll(viewModel.profile.value, LocalContext.current)
+        composable("EditPage") {
+            EditProfileScreen()
         }
     }
 }
+
+
 

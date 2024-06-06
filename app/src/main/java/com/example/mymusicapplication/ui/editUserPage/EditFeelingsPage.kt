@@ -1,4 +1,4 @@
-package com.example.mymusicapplication.ui.page
+package com.example.mymusicapplication.ui.editUserPage
 
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.fillMaxWidth

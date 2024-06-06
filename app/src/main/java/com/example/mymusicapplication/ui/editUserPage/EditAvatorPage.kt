@@ -1,4 +1,4 @@
-package com.example.mymusicapplication.ui.page
+package com.example.mymusicapplication.ui.editUserPage
 
 import android.annotation.SuppressLint
 import android.content.Context
