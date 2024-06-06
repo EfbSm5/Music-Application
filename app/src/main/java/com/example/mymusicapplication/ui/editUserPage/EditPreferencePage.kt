@@ -2,7 +2,9 @@ package com.example.mymusicapplication.ui.editUserPage
 
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Row
+import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxWidth
+import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.itemsIndexed
@@ -20,8 +22,7 @@ import com.example.mymusicapplication.QuestionsAndAnswers
 
 @Composable
 fun EditPreference(
-    questionsAndAnswers: QuestionsAndAnswers,
-    saveData: (List<String>) -> Unit
+    questionsAndAnswers: QuestionsAndAnswers, saveData: (List<String>) -> Unit
 ) {
     val selectedOptions = remember { mutableStateListOf<String>() }
     DisposableEffect(key1 = Unit) {
@@ -35,6 +36,7 @@ fun EditPreference(
         horizontalAlignment = Alignment.CenterHorizontally
     ) {
         item { Text(text = questionsAndAnswers.getQuestion()) }
+        item { Spacer(modifier = Modifier.height(200.dp)) }
         itemsIndexed(questionsAndAnswers.getPotentialAnswer()) { _, item ->
             val isSelected = remember { mutableStateOf(false) }
             Row {

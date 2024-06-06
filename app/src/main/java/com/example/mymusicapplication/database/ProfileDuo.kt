@@ -30,4 +30,7 @@ interface ProfileDuo {
 
     @Query("select data from profile order by id desc limit 1;")
     fun loadUser(): String?
+
+    @Query("select data from profile order by id desc ")
+    fun loadAllUsers(): List<String?>
 }

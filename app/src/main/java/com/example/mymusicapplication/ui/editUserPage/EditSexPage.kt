@@ -1,7 +1,9 @@
 package com.example.mymusicapplication.ui.editUserPage
 
 import androidx.compose.foundation.layout.Arrangement
+import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxWidth
+import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.LazyRow
@@ -37,6 +39,7 @@ fun EditSex(
         horizontalAlignment = Alignment.CenterHorizontally
     ) {
         item { Text(text = questionsAndAnswers.getQuestion()) }
+        item { Spacer(modifier = Modifier.height(200.dp)) }
         itemsIndexed(questionsAndAnswers.getPotentialAnswer()) { _, item ->
             LazyRow(
                 modifier = Modifier.fillMaxWidth(), horizontalArrangement = Arrangement.Center

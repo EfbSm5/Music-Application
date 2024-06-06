@@ -41,7 +41,7 @@ fun EditBirthDay(saveData: (String) -> Unit) {
     ) {
         item { Text(text = "请选择你的生日") }
         item { Text(dataFormat.format(selectedDate.time)) }
-        item { Spacer(modifier = Modifier.height(16.dp)) }
+        item { Spacer(modifier = Modifier.height(200.dp)) }
         item {
             Button(onClick = {
                 showDatePicker(context, selectedDate) { newDate ->

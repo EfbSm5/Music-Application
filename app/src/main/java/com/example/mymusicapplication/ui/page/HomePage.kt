@@ -27,7 +27,7 @@ import kotlinx.coroutines.launch
 @Composable
 fun HomeScreen() {
     val context = LocalContext.current
-    var profileInDataBase by remember { mutableStateOf<UserProfile?>(null) }
+    var profileInDataBase by remember { mutableStateOf<List<UserProfile>?>(null) }
     val coroutineScope = rememberCoroutineScope()
     LaunchedEffect(Unit) {
         coroutineScope.launch(Dispatchers.IO) {
@@ -35,11 +35,17 @@ fun HomeScreen() {
         }
     }
     if (profileInDataBase != null) {
-        ShowUserProfile(userProfile = profileInDataBase!!)
+        if (profileInDataBase!!.size == 1) {
+            ShowUserProfile(userProfile = profileInDataBase!![0])
+        } else {
+            ShowUserProfile(userProfile = profileInDataBase!![0])
+        }
     } else {
-        Text(text = "数据加载中...")
+        Text(text = "没有数据")
     }
 }
+
+
 @Composable
 fun ShowUserProfile(userProfile: UserProfile) {
     LazyColumn(
@@ -84,4 +90,5 @@ fun ShowUserProfile(userProfile: UserProfile) {
         }
     }
 }
+
 

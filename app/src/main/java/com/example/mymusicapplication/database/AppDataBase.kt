@@ -30,9 +30,16 @@ abstract class AppDataBase : RoomDatabase() {
     }
 }
 
-fun checkDataBase(context: Context, userProfile: (UserProfile?) -> Unit) {
-    val user = AppDataBase.getDatabase(context).userDao().loadUser()
-    userProfile(toProfile(user))
+fun checkDataBase(context: Context, getUserProfile: (List<UserProfile>?) -> Unit) {
+    val user = AppDataBase.getDatabase(context).userDao().loadAllUsers()
+    val userList = mutableListOf<UserProfile>()
+    for (i in user) {
+        val profile = toProfile(i)
+        if (profile != null) {
+            userList.add(profile)
+        }
+    }
+    getUserProfile(userList)
 }
 
 

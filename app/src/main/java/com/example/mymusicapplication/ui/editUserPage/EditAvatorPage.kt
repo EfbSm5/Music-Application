@@ -10,9 +10,12 @@ import androidx.camera.core.ImageCaptureException
 import androidx.camera.core.Preview
 import androidx.camera.lifecycle.ProcessCameraProvider
 import androidx.camera.view.PreviewView
+import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
-import androidx.compose.foundation.layout.Row
+import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxSize
+import androidx.compose.foundation.layout.fillMaxWidth
+import androidx.compose.foundation.layout.height
 import androidx.compose.material3.Button
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
@@ -21,9 +24,11 @@ import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
+import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.platform.LocalLifecycleOwner
+import androidx.compose.ui.unit.dp
 import androidx.compose.ui.viewinterop.AndroidView
 import androidx.core.content.ContextCompat
 import androidx.core.net.toFile
@@ -45,33 +50,35 @@ fun CameraView(onImageSaved: (Uri) -> Unit) {
     Column {
         val lifeCycleOwner = LocalLifecycleOwner.current
 
-        AndroidView(factory = { ctx ->
+        AndroidView(
+            factory = { ctx ->
 
-            val previewView = PreviewView(ctx)
-            val cameraProviderFuture = ProcessCameraProvider.getInstance(ctx)
+                val previewView = PreviewView(ctx)
+                val cameraProviderFuture = ProcessCameraProvider.getInstance(ctx)
 
-            cameraProviderFuture.addListener(/* listener = */ {
-                val cameraProvider = cameraProviderFuture.get()
+                cameraProviderFuture.addListener(/* listener = */ {
+                    val cameraProvider = cameraProviderFuture.get()
 
-                val preview = Preview.Builder().build()
-                    .also { it.setSurfaceProvider(previewView.surfaceProvider) }
+                    val preview = Preview.Builder().build()
+                        .also { it.setSurfaceProvider(previewView.surfaceProvider) }
 
-                imageCapture = ImageCapture.Builder().build()
+                    imageCapture = ImageCapture.Builder().build()
 
-                cameraProvider.unbindAll()
-                cameraProvider.bindToLifecycle(
-                    lifecycleOwner = lifeCycleOwner,
-                    cameraSelector = CameraSelector.DEFAULT_BACK_CAMERA,
-                    preview,
-                    imageCapture
-                )
+                    cameraProvider.unbindAll()
+                    cameraProvider.bindToLifecycle(
+                        lifecycleOwner = lifeCycleOwner,
+                        cameraSelector = CameraSelector.DEFAULT_BACK_CAMERA,
+                        preview,
+                        imageCapture
+                    )
 
-            }, /* executor = */ ContextCompat.getMainExecutor(ctx))
+                }, /* executor = */ ContextCompat.getMainExecutor(ctx))
 
-            return@AndroidView previewView
-        }, modifier = Modifier
-            .fillMaxSize()
-            .weight(1f))
+                return@AndroidView previewView
+            }, modifier = Modifier
+                .fillMaxSize()
+                .weight(1f)
+        )
         imageCapture?.let { capture ->
             Column {
                 Button(onClick = {
@@ -127,8 +134,7 @@ fun PhotoScreen(saveData: (File) -> Unit) {
             screen = Screen.Capture
         }
     }
-    View(
-        saveData = saveData,
+    View(saveData = saveData,
         screen = screen,
         onImageSaved = { screen = Screen.Success(uri = it) },
         rePhoto = { screen = Screen.Capture })
@@ -137,10 +143,7 @@ fun PhotoScreen(saveData: (File) -> Unit) {
 
 @Composable
 fun View(
-    saveData: (File) -> Unit,
-    screen: Screen,
-    onImageSaved: (Uri) -> Unit,
-    rePhoto: () -> Unit
+    saveData: (File) -> Unit, screen: Screen, onImageSaved: (Uri) -> Unit, rePhoto: () -> Unit
 ) {
     when (screen) {
         Screen.Capture -> {
@@ -154,16 +157,20 @@ fun View(
         is Screen.Success -> {
             val savedImage = screen.uri.toFile()
             saveData(savedImage)
-            AsyncImage(model = savedImage, contentDescription = null)
-            Row {
-                Button(onClick = {
-                    rePhoto()
-                }) {
+            Column(
+                modifier = Modifier.fillMaxWidth(),
+                verticalArrangement = Arrangement.Center,
+                horizontalAlignment = Alignment.CenterHorizontally
+            ) {
+                AsyncImage(model = savedImage, contentDescription = null)
+                Spacer(modifier = Modifier.height(50.dp))
+                Button(
+                    onClick = { rePhoto() },
+                ) {
                     Text(text = "重拍")
                 }
             }
         }
-
     }
 }
 

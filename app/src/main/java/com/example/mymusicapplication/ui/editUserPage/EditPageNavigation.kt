@@ -25,10 +25,9 @@ import com.example.mymusicapplication.EditUserProfileViewModel
 import com.example.mymusicapplication.QuestionsAndAnswers
 import com.example.mymusicapplication.ui.page.ShowAll
 
-
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
-fun EditProfileScreen() {
+fun EditProfileScreen(navControllerForHome: NavController) {
     val navController = rememberNavController()
     Scaffold(topBar = {
         TopAppBar(title = { Text(text = "让我们更了解你") })
@@ -39,22 +38,28 @@ fun EditProfileScreen() {
                 horizontalArrangement = Arrangement.SpaceBetween,
                 verticalAlignment = Alignment.CenterVertically
             ) {
-                Button(onClick = {
-                    lastScreen(navController)
-                }) {
+                Button(
+                    onClick = {
+                        lastScreen(navController, navControllerForHome)
+                    }, modifier = Modifier.weight(1f)
+                ) {
                     Text(text = "上一题")
                 }
-                Button(onClick = {
-                    nextScreen(navController)
-                }) {
+                Button(
+                    onClick = {
+                        nextScreen(navController, navControllerForHome)
+                    }, modifier = Modifier.weight(1f)
+                ) {
                     Text(text = "下一题")
                 }
             }
         }
     }) {
         Box(
-            modifier = Modifier.padding(it), contentAlignment = Alignment.Center
-        ) {
+            modifier = Modifier.padding(it),
+            contentAlignment = Alignment.Center,
+
+            ) {
             EditProfileContents(navController)
         }
     }
@@ -94,7 +99,7 @@ fun EditProfileContents(navController: NavHostController) {
 }
 
 
-fun nextScreen(navController: NavController) {
+fun nextScreen(navController: NavController, navControllerForHome: NavController) {
     val list = listOf(
         "editName",
         "editSex",
@@ -112,10 +117,12 @@ fun nextScreen(navController: NavController) {
     } else null
     if (nextRoute != null) {
         navController.navigate(nextRoute)
+    } else {
+        navControllerForHome.navigate("HomePage")
     }
 }
 
-fun lastScreen(navController: NavController) {
+fun lastScreen(navController: NavController, navControllerForHome: NavController) {
     val list = listOf(
         "editName",
         "editSex",
@@ -128,12 +135,14 @@ fun lastScreen(navController: NavController) {
     val currentDestination = navController.currentBackStackEntry?.destination
     val currentRoute = currentDestination?.route
     val index = list.indexOf(currentRoute)
-    val lastRoute = if (index in list.indices) {
+    val lastRoute = if (index > 0) {
         list[index - 1]
     } else {
         null
     }
     if (lastRoute != null) {
         navController.navigate(lastRoute)
+    } else {
+        navControllerForHome.navigate("WelcomePage")
     }
 }
