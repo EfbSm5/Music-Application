@@ -13,7 +13,6 @@ import androidx.camera.view.PreviewView
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.fillMaxSize
-import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.material3.Button
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
@@ -28,11 +27,7 @@ import androidx.compose.ui.platform.LocalLifecycleOwner
 import androidx.compose.ui.viewinterop.AndroidView
 import androidx.core.content.ContextCompat
 import androidx.core.net.toFile
-import androidx.navigation.NavController
 import coil.compose.AsyncImage
-import com.example.mymusicapplication.EditUserProfileViewModel
-import com.example.mymusicapplication.lastScreen
-import com.example.mymusicapplication.nextScreen
 import com.google.accompanist.permissions.ExperimentalPermissionsApi
 import com.google.accompanist.permissions.isGranted
 import com.google.accompanist.permissions.rememberPermissionState
@@ -74,15 +69,19 @@ fun CameraView(onImageSaved: (Uri) -> Unit) {
             }, /* executor = */ ContextCompat.getMainExecutor(ctx))
 
             return@AndroidView previewView
-        }, modifier = Modifier.fillMaxSize())
-
-
+        }, modifier = Modifier
+            .fillMaxSize()
+            .weight(1f))
         imageCapture?.let { capture ->
-            Button(onClick = {
-                takePhoto(
-                    context = context, imageCapture = capture, onImageSaved = onImageSaved
-                )
-            }) { Text("拍照") }
+            Column {
+                Button(onClick = {
+                    takePhoto(
+                        context = context, imageCapture = capture, onImageSaved = onImageSaved
+                    )
+                }) {
+                    Text("拍照")
+                }
+            }
         }
     }
 }
@@ -116,8 +115,7 @@ fun takePhoto(
 @OptIn(ExperimentalPermissionsApi::class)
 @SuppressLint("UnusedMaterial3ScaffoldPaddingParameter")
 @Composable
-fun PhotoScreen(viewModel: EditUserProfileViewModel, navController: NavController) {
-
+fun PhotoScreen(saveData: (File) -> Unit) {
     var screen: Screen by remember { mutableStateOf(Screen.PermissionDenied) }
 
     val cameraPermissionState = rememberPermissionState(android.Manifest.permission.CAMERA)
@@ -129,26 +127,21 @@ fun PhotoScreen(viewModel: EditUserProfileViewModel, navController: NavControlle
             screen = Screen.Capture
         }
     }
-
-    LazyColumn(modifier = Modifier.fillMaxSize()) {
-        item {
-            View(screen = screen, onImageSaved = { screen = Screen.Success(uri = it) }, onClick = {
-                viewModel.updateAvatar(it)
-                nextScreen(navController)
-            }, navController)
-        }
-    }
+    View(
+        saveData = saveData,
+        screen = screen,
+        onImageSaved = { screen = Screen.Success(uri = it) },
+        rePhoto = { screen = Screen.Capture })
 }
 
 
 @Composable
 fun View(
+    saveData: (File) -> Unit,
     screen: Screen,
     onImageSaved: (Uri) -> Unit,
-    onClick: (File) -> Unit,
-    navController: NavController
+    rePhoto: () -> Unit
 ) {
-
     when (screen) {
         Screen.Capture -> {
             CameraView(onImageSaved = onImageSaved)
@@ -160,26 +153,23 @@ fun View(
 
         is Screen.Success -> {
             val savedImage = screen.uri.toFile()
+            saveData(savedImage)
             AsyncImage(model = savedImage, contentDescription = null)
             Row {
                 Button(onClick = {
-                    onClick(savedImage)
+                    rePhoto()
                 }) {
-                    Text(text = "确定")
-                }
-                Button(onClick = {
-                    lastScreen(navController)
-                }) {
-                    Text(text = "返回")
+                    Text(text = "重拍")
                 }
             }
         }
+
     }
 }
-
 
 sealed interface Screen {
     data object PermissionDenied : Screen
     data object Capture : Screen
     data class Success(val uri: Uri) : Screen
 }
+

@@ -9,12 +9,19 @@ import androidx.activity.enableEdgeToEdge
 import androidx.appcompat.app.AppCompatActivity
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.fillMaxSize
+import androidx.compose.foundation.layout.padding
+import androidx.compose.material.Button
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.Edit
 import androidx.compose.material3.AlertDialog
+import androidx.compose.material3.BottomAppBar
+import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.Icon
+import androidx.compose.material3.Scaffold
 import androidx.compose.material3.Text
 import androidx.compose.material3.TextButton
+import androidx.compose.material3.TopAppBar
+import androidx.compose.material3.rememberTopAppBarState
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.getValue
@@ -26,6 +33,8 @@ import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.platform.LocalContext
+import androidx.compose.ui.tooling.preview.Preview
+import androidx.navigation.compose.rememberNavController
 import com.example.mymusicapplication.database.checkDataBase
 import com.example.mymusicapplication.database.insertDataBase
 import com.example.mymusicapplication.database.toProfile
@@ -178,9 +187,45 @@ class DataActivity : AppCompatActivity() {
             dismiss()
         })
         if (confirmed) {
-            val viewModel = EditUserProfileViewModel()
-            SurveyNavGraph(viewModel)
+            ShowSurvey()
         }
+    }
+
+
+    @OptIn(ExperimentalMaterial3Api::class)
+    @Composable
+    private fun ShowSurvey() {
+        val navController = rememberNavController()
+        Scaffold(
+            topBar = {
+                TopAppBar(title = { Text(text = "Music App") })
+            },
+            bottomBar = {
+                BottomAppBar {
+                    Button(onClick = {
+                        nextScreen(navController)
+                    }) {
+                        Text(text = "下一题")
+                    }
+                    Button(onClick = {
+                        lastScreen(navController)
+                    }) {
+                        Text(text = "上一题")
+                    }
+                }
+            }
+        )
+        {
+            Box(
+                modifier = Modifier.padding(it),
+                contentAlignment = Alignment.Center
+            )
+            {
+                SurveyNavGraph(navController)
+            }
+        }
+
+
     }
 }
 
