@@ -34,7 +34,11 @@ fun EditEmotion(saveData: (Float) -> Unit) {
         item { Text(text = "你更喜欢更轻柔的音乐还是更有力量的音乐") }
         item { Spacer(modifier = Modifier.height(200.dp)) }
         item {
-            Slider(value = feeling, onValueChange = { feeling = it })
+            Slider(
+                value = feeling,
+                onValueChange = { feeling = it },
+                steps = 4
+            )
         }
         item {
             LazyRow(

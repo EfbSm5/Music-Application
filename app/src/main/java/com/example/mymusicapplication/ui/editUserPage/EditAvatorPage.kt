@@ -47,7 +47,11 @@ fun CameraView(onImageSaved: (Uri) -> Unit) {
     var imageCapture: ImageCapture? by remember { mutableStateOf(null) }
     val context = LocalContext.current
 
-    Column {
+    Column(
+        modifier = Modifier.fillMaxWidth(),
+        verticalArrangement = Arrangement.Center,
+        horizontalAlignment = Alignment.CenterHorizontally
+    ) {
         val lifeCycleOwner = LocalLifecycleOwner.current
 
         AndroidView(
@@ -80,14 +84,12 @@ fun CameraView(onImageSaved: (Uri) -> Unit) {
                 .weight(1f)
         )
         imageCapture?.let { capture ->
-            Column {
-                Button(onClick = {
-                    takePhoto(
-                        context = context, imageCapture = capture, onImageSaved = onImageSaved
-                    )
-                }) {
-                    Text("拍照")
-                }
+            Button(onClick = {
+                takePhoto(
+                    context = context, imageCapture = capture, onImageSaved = onImageSaved
+                )
+            }) {
+                Text("拍照")
             }
         }
     }
