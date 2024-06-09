@@ -6,7 +6,6 @@ import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxWidth
-import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.width
 import androidx.compose.material3.Button
@@ -14,7 +13,6 @@ import androidx.compose.material3.BottomAppBar
 import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Scaffold
-import androidx.compose.material3.Surface
 import androidx.compose.material3.Text
 import androidx.compose.material3.TopAppBar
 import androidx.compose.runtime.Composable
@@ -44,7 +42,6 @@ fun PreviewEditScreen() {
 @Composable
 fun EditProfileScreen(navControllerForHome: NavController) {
     val navController = rememberNavController()
-
     Scaffold(topBar = {
         TopAppBar(title = {
             Text(
@@ -107,13 +104,13 @@ fun EditProfileContents(navController: NavHostController) {
             EditBirthDay { viewModel.updateBirthday(it) }
         }
         composable("editPreferences") {
-            EditPreference(preferencesQuestionsAndAnswers) { viewModel.updatePreferences(it) }
+            EditPreference { viewModel.updatePreferences(it) }
         }
         composable("editEmotion") {
             EditEmotion { viewModel.updateEmotion(it) }
         }
         composable("editAvatar") {
-            PhotoScreen { viewModel.updateAvatar(it) }
+            EditAvator { viewModel.updateAvatar(it) }
         }
         composable("summary") {
             ShowAll(viewModel.profile.value, LocalContext.current)

@@ -22,8 +22,10 @@ import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.platform.LocalContext
+import androidx.compose.ui.text.TextStyle
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
+import androidx.compose.ui.unit.sp
 import java.text.SimpleDateFormat
 import java.util.Calendar
 
@@ -64,8 +66,15 @@ fun EditBirthDayScreen(
             verticalArrangement = Arrangement.Center,
             horizontalAlignment = Alignment.CenterHorizontally
         ) {
-            item { Text(text = "请选择你的生日") }
-            item { Text(dateFormat.format(selectedDate.time)) }
+            item { Spacer(modifier = Modifier.height(200.dp)) }
+            item {
+                Text(
+                    text = "请选择你的生日",
+                    style = TextStyle(fontSize = 30.sp),
+                    color = MaterialTheme.colorScheme.outline
+                )
+            }
+            item { Text(text = "你选择的是   " + dateFormat.format(selectedDate.time)) }
             item { Spacer(modifier = Modifier.height(200.dp)) }
             item {
                 Button(onClick = {
@@ -73,7 +82,7 @@ fun EditBirthDayScreen(
                         onClick(newDate)
                     }
                 }) {
-                    Text("Select Date")
+                    Text("选择日期")
                 }
             }
         }

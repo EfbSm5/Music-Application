@@ -16,6 +16,7 @@ import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
+import androidx.compose.foundation.layout.padding
 import androidx.compose.material3.Button
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
@@ -41,24 +42,21 @@ import java.text.SimpleDateFormat
 import java.util.Locale
 import java.util.concurrent.Executors
 
-
 @Composable
 fun CameraView(onImageSaved: (Uri) -> Unit) {
     var imageCapture: ImageCapture? by remember { mutableStateOf(null) }
     val context = LocalContext.current
-
     Column(
-        modifier = Modifier.fillMaxWidth(),
+        modifier = Modifier.fillMaxSize(),
         verticalArrangement = Arrangement.Center,
         horizontalAlignment = Alignment.CenterHorizontally
     ) {
         val lifeCycleOwner = LocalLifecycleOwner.current
-
         AndroidView(
-            factory = { ctx ->
+            factory = { context ->
 
-                val previewView = PreviewView(ctx)
-                val cameraProviderFuture = ProcessCameraProvider.getInstance(ctx)
+                val previewView = PreviewView(context)
+                val cameraProviderFuture = ProcessCameraProvider.getInstance(context)
 
                 cameraProviderFuture.addListener(/* listener = */ {
                     val cameraProvider = cameraProviderFuture.get()
@@ -76,12 +74,10 @@ fun CameraView(onImageSaved: (Uri) -> Unit) {
                         imageCapture
                     )
 
-                }, /* executor = */ ContextCompat.getMainExecutor(ctx))
+                }, /* executor = */ ContextCompat.getMainExecutor(context))
 
                 return@AndroidView previewView
-            }, modifier = Modifier
-                .fillMaxSize()
-                .weight(1f)
+            }, modifier = Modifier.weight(1f)
         )
         imageCapture?.let { capture ->
             Button(onClick = {
@@ -124,11 +120,9 @@ fun takePhoto(
 @OptIn(ExperimentalPermissionsApi::class)
 @SuppressLint("UnusedMaterial3ScaffoldPaddingParameter")
 @Composable
-fun PhotoScreen(saveData: (File) -> Unit) {
+fun EditAvator(saveData: (File) -> Unit) {
     var screen: Screen by remember { mutableStateOf(Screen.PermissionDenied) }
-
     val cameraPermissionState = rememberPermissionState(android.Manifest.permission.CAMERA)
-
     LaunchedEffect(cameraPermissionState.status) {
         if (!cameraPermissionState.status.isGranted) {
             cameraPermissionState.launchPermissionRequest()
@@ -136,7 +130,7 @@ fun PhotoScreen(saveData: (File) -> Unit) {
             screen = Screen.Capture
         }
     }
-    View(saveData = saveData,
+    EditAvatorScreen(saveData = saveData,
         screen = screen,
         onImageSaved = { screen = Screen.Success(uri = it) },
         rePhoto = { screen = Screen.Capture })
@@ -144,16 +138,20 @@ fun PhotoScreen(saveData: (File) -> Unit) {
 
 
 @Composable
-fun View(
+fun EditAvatorScreen(
     saveData: (File) -> Unit, screen: Screen, onImageSaved: (Uri) -> Unit, rePhoto: () -> Unit
 ) {
     when (screen) {
-        Screen.Capture -> {
-            CameraView(onImageSaved = onImageSaved)
+        Screen.PermissionDenied -> {
+            Text(
+                text = "需要授权", modifier = Modifier
+                    .fillMaxSize()
+                    .padding(300.dp)
+            )
         }
 
-        Screen.PermissionDenied -> {
-            Text(text = "no permission")
+        Screen.Capture -> {
+            CameraView(onImageSaved = onImageSaved)
         }
 
         is Screen.Success -> {
@@ -164,7 +162,10 @@ fun View(
                 verticalArrangement = Arrangement.Center,
                 horizontalAlignment = Alignment.CenterHorizontally
             ) {
-                AsyncImage(model = savedImage, contentDescription = null)
+                AsyncImage(
+                    model = savedImage,
+                    contentDescription = null,
+                )
                 Spacer(modifier = Modifier.height(50.dp))
                 Button(
                     onClick = { rePhoto() },
@@ -181,4 +182,3 @@ sealed interface Screen {
     data object Capture : Screen
     data class Success(val uri: Uri) : Screen
 }
-
