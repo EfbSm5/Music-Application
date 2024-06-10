@@ -24,25 +24,19 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.text.TextStyle
-import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
+import com.example.mymusicapplication.EditUserProfileViewModel
 import com.example.mymusicapplication.QuestionsAndAnswers
 
-@Preview
-@Composable
-fun PreviewEditSex() {
-    EditSex(questionsAndAnswers = QuestionsAndAnswers("你的性别", listOf("男", "女", "其他"))) {
-
-    }
-}
 
 @Composable
 fun EditSex(
     questionsAndAnswers: QuestionsAndAnswers,
+    viewModel: EditUserProfileViewModel,
     saveData: (String) -> Unit
 ) {
-    var selectedOption by remember { mutableStateOf("") } // 存储当前选中的选项
+    var selectedOption by remember { mutableStateOf(viewModel.profile.value.sex) } // 存储当前选中的选项
     DisposableEffect(Unit) {
         onDispose {
             saveData(selectedOption.ifEmpty { "不详" })

@@ -1,5 +1,6 @@
 package com.example.mymusicapplication.ui.editUserPage
 
+import android.annotation.SuppressLint
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.border
 import androidx.compose.foundation.clickable
@@ -25,21 +26,16 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.text.TextStyle
-import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
+import com.example.mymusicapplication.EditUserProfileViewModel
 import com.example.mymusicapplication.R
 
-@Preview
-@Composable
-fun PreviewEditPreference() {
-    EditPreference {
 
-    }
-}
-
+@SuppressLint("StateFlowValueCalledInComposition")
 @Composable
 fun EditPreference(
+    viewModel: EditUserProfileViewModel,
     saveData: (List<String>) -> Unit
 ) {
     val potentialAnswers = listOf(
@@ -52,19 +48,26 @@ fun EditPreference(
         ImageAndName("电子", R.drawable.dianzi)
     )
     val selectedOptions = remember { mutableStateListOf<String>() }
+    selectedOptions.addAll(viewModel.profile.value.preference)
     DisposableEffect(key1 = Unit) {
         onDispose {
             saveData(selectedOptions)
         }
     }
-    Surface {
+    Surface(Modifier.padding(20.dp)) {
         LazyColumn(
             modifier = Modifier.fillMaxWidth(),
             verticalArrangement = Arrangement.Center,
             horizontalAlignment = Alignment.CenterHorizontally
         ) {
-            item { Spacer(modifier = Modifier.height(200.dp)) }
-            item { Text(text = "你听音乐的爱好是什么", style = TextStyle(fontSize = 30.sp)) }
+            item { Spacer(modifier = Modifier.height(100.dp)) }
+            item {
+                Text(
+                    text = "你听音乐的爱好是什么",
+                    style = TextStyle(fontSize = 30.sp),
+                    color = MaterialTheme.colorScheme.outline
+                )
+            }
             itemsIndexed(potentialAnswers) { _, item ->
                 CheckBoxAndText(
                     modifier = Modifier.padding(vertical = 6.dp),

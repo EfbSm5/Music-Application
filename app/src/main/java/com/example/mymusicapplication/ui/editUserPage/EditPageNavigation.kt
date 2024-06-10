@@ -16,6 +16,8 @@ import androidx.compose.material3.Scaffold
 import androidx.compose.material3.Text
 import androidx.compose.material3.TopAppBar
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.mutableStateOf
+import androidx.compose.runtime.remember
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.platform.LocalContext
@@ -30,7 +32,6 @@ import androidx.navigation.compose.composable
 import androidx.navigation.compose.rememberNavController
 import com.example.mymusicapplication.EditUserProfileViewModel
 import com.example.mymusicapplication.QuestionsAndAnswers
-import com.example.mymusicapplication.ui.page.ShowAll
 
 @Preview
 @Composable
@@ -41,6 +42,10 @@ fun PreviewEditScreen() {
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
 fun EditProfileScreen(navControllerForHome: NavController) {
+    val shouldShowLast = remember { mutableStateOf(true) }
+
+    val shouldShowNext = remember { mutableStateOf(true) }
+
     val navController = rememberNavController()
     Scaffold(topBar = {
         TopAppBar(title = {
@@ -57,21 +62,25 @@ fun EditProfileScreen(navControllerForHome: NavController) {
                 horizontalArrangement = Arrangement.SpaceBetween,
                 verticalAlignment = Alignment.CenterVertically
             ) {
-                Button(
-                    onClick = {
-                        lastScreen(navController, navControllerForHome)
-                    }, modifier = Modifier.weight(1f)
-                ) {
-                    Text(text = "上一题")
-                }
+                if (shouldShowLast.value) {
+                    Button(
+                        onClick = {
+                            lastScreen(navController, navControllerForHome)
+                        }, modifier = Modifier.weight(1f)
+                    ) {
+                        Text(text = "上一题")
+                    }
+                } else Spacer(modifier = Modifier.weight(1f))
                 Spacer(modifier = Modifier.width(12.dp))
-                Button(
-                    onClick = {
-                        nextScreen(navController, navControllerForHome)
-                    }, modifier = Modifier.weight(1f)
-                ) {
-                    Text(text = "下一题")
-                }
+                if (shouldShowNext.value) {
+                    Button(
+                        onClick = {
+                            nextScreen(navController, navControllerForHome)
+                        }, modifier = Modifier.weight(1f)
+                    ) {
+                        Text(text = "下一题")
+                    }
+                } else Spacer(modifier = Modifier.weight(1f))
             }
         }
     }) {
@@ -79,7 +88,10 @@ fun EditProfileScreen(navControllerForHome: NavController) {
             modifier = Modifier.padding(it),
             contentAlignment = Alignment.Center,
         ) {
-            EditProfileContents(navController)
+            EditProfileContents(
+                navController,
+                { shouldShowLast.value = it },
+                { shouldShowNext.value = it })
         }
     }
 
@@ -87,33 +99,48 @@ fun EditProfileScreen(navControllerForHome: NavController) {
 
 @SuppressLint("StateFlowValueCalledInComposition")
 @Composable
-fun EditProfileContents(navController: NavHostController) {
+fun EditProfileContents(
+    navController: NavHostController,
+    showLastButton: (Boolean) -> Unit,
+    showNextButton: (Boolean) -> Unit
+) {
     val sexQuestionsAndAnswers = QuestionsAndAnswers("你的性别", listOf("男", "女", "其他"))
-    val preferencesQuestionsAndAnswers = QuestionsAndAnswers(
-        "你听歌的偏好", listOf("民谣", "摇滚", "流行", "说唱", "电子", "ACG", "古典", "爵士")
-    )
     val viewModel = EditUserProfileViewModel()
     NavHost(navController, startDestination = "editName") {
         composable("editName") {
-            EditName { viewModel.updateName(it) }
+            EditName(viewModel) { viewModel.updateName(it) }
+            showLastButton(false)
+            showNextButton(true)
         }
         composable("editSex") {
-            EditSex(sexQuestionsAndAnswers) { viewModel.updateSex(it) }
+            EditSex(sexQuestionsAndAnswers, viewModel) { viewModel.updateSex(it) }
+            showLastButton(true)
+            showNextButton(true)
         }
         composable("editBirthday") {
-            EditBirthDay { viewModel.updateBirthday(it) }
+            EditBirthDay(viewModel) { viewModel.updateBirthday(it) }
+            showLastButton(true)
+            showNextButton(true)
         }
         composable("editPreferences") {
-            EditPreference { viewModel.updatePreferences(it) }
+            EditPreference(viewModel) { viewModel.updatePreferences(it) }
+            showLastButton(true)
+            showNextButton(true)
         }
         composable("editEmotion") {
-            EditEmotion { viewModel.updateEmotion(it) }
+            EditEmotion(viewModel) { viewModel.updateEmotion(it) }
+            showLastButton(true)
+            showNextButton(true)
         }
         composable("editAvatar") {
             EditAvator { viewModel.updateAvatar(it) }
+            showLastButton(true)
+            showNextButton(true)
         }
         composable("summary") {
-            ShowAll(viewModel.profile.value, LocalContext.current)
+            ShowAll(userProfile = viewModel.profile.value, context = LocalContext.current)
+            showNextButton(false)
+            showLastButton(true)
         }
     }
 }

@@ -4,9 +4,6 @@ import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.lazy.LazyColumn
-import androidx.compose.material.icons.Icons
-import androidx.compose.material.ripple.LocalRippleTheme
-import androidx.compose.material3.Icon
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Text
 import androidx.compose.material3.TextField
@@ -19,23 +16,17 @@ import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.text.TextStyle
-import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
+import com.example.mymusicapplication.EditUserProfileViewModel
 
-@Preview
-@Composable
-fun PreviewEditName() {
-    EditName {
 
-    }
-}
 
 @Composable
 fun EditName(
-    saveData: (String) -> Unit
+    viewModel: EditUserProfileViewModel, saveData: (String) -> Unit
 ) {
-    var name by remember { mutableStateOf("") }
+    var name by remember { mutableStateOf(viewModel.profile.value.name) }
     DisposableEffect(Unit) {
         onDispose {
             saveData(name.ifEmpty {

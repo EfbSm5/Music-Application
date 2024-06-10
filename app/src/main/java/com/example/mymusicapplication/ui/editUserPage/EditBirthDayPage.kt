@@ -23,31 +23,29 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.text.TextStyle
-import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
+import com.example.mymusicapplication.EditUserProfileViewModel
 import java.text.SimpleDateFormat
 import java.util.Calendar
-
-@Preview
-@Composable
-fun PreviewEditBirthDay() {
-    EditBirthDay {}
-}
 
 
 @SuppressLint("SimpleDateFormat")
 @Composable
-fun EditBirthDay(saveData: (String) -> Unit) {
-    var selectedDate by remember { mutableStateOf(Calendar.getInstance()) }
-    val context = LocalContext.current
+fun EditBirthDay(viewModel: EditUserProfileViewModel, saveData: (String) -> Unit) {
     val dataFormat = SimpleDateFormat("yyyy-MM-dd")
+    var selectedDate by remember {
+        mutableStateOf(viewModel.profile.value.birthDay)
+    }
+    val calendar by remember { mutableStateOf(Calendar.getInstance()) }
+    calendar.time = dataFormat.parse(selectedDate)!!
+    val context = LocalContext.current
     DisposableEffect(Unit) {
         onDispose {
-            saveData(dataFormat.format(selectedDate.time))
+            saveData(selectedDate)
         }
     }
-    EditBirthDayScreen(dataFormat, context, selectedDate) { selectedDate = it }
+    EditBirthDayScreen(dataFormat, context, calendar) { selectedDate = dataFormat.format(it.time) }
 }
 
 @Composable
