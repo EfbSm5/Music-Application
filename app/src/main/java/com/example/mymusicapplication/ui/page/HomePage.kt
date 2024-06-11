@@ -60,8 +60,7 @@ fun HomeScreen() {
     }
     if (profileInDataBase != null && profileInDataBase!!.isNotEmpty()) {
         if (profileInDataBase!!.size > 1) {
-            SingleChoiceDialog(
-                openDialog = profileShow == null,
+            SingleChoiceDialog(openDialog = profileShow == null,
                 options = profileInDataBase!!,
                 onClick = { profileShow = it },
                 {})
@@ -76,7 +75,7 @@ fun HomeScreen() {
 
 
 @Composable
-fun SingleChoiceDialog(
+private fun SingleChoiceDialog(
     openDialog: Boolean,
     options: List<UserProfile>,
     onClick: (UserProfile) -> Unit,
@@ -88,21 +87,17 @@ fun SingleChoiceDialog(
                 LazyColumn {
                     item {
                         Text(
-                            text = "选择一个账户",
-                            modifier = Modifier.padding(16.dp)
+                            text = "选择一个账户", modifier = Modifier.padding(16.dp)
                         )
                     }
                     itemsIndexed(options) { _, option ->
-                        Row(
-                            verticalAlignment = Alignment.CenterVertically,
+                        Row(verticalAlignment = Alignment.CenterVertically,
                             modifier = Modifier
                                 .fillMaxWidth()
                                 .clickable { onClick(option) }
-                                .padding(horizontal = 16.dp, vertical = 8.dp)
-                        ) {
+                                .padding(horizontal = 16.dp, vertical = 8.dp)) {
                             Text(
-                                text = option.name,
-                                modifier = Modifier.padding(start = 8.dp)
+                                text = option.name, modifier = Modifier.padding(start = 8.dp)
                             )
                         }
                     }
@@ -113,14 +108,12 @@ fun SingleChoiceDialog(
 }
 
 @Composable
-fun ShowUserProfile(userProfile: UserProfile) {
+private fun ShowUserProfile(userProfile: UserProfile) {
     Surface(
-        Modifier.padding(30.dp),
-        border = BorderStroke(2.dp, MaterialTheme.colorScheme.onPrimary)
+        Modifier.padding(30.dp), border = BorderStroke(2.dp, MaterialTheme.colorScheme.onPrimary)
     ) {
         LazyColumn(
-            modifier = Modifier.fillMaxWidth(),
-            verticalArrangement = Arrangement.Center
+            modifier = Modifier.fillMaxWidth(), verticalArrangement = Arrangement.Center
         ) {
             item { Spacer(modifier = Modifier.height(80.dp)) }
             item {
@@ -129,17 +122,13 @@ fun ShowUserProfile(userProfile: UserProfile) {
                     verticalAlignment = Alignment.CenterVertically
                 ) {
                     Icon(
-                        Icons.Filled.AccountBox,
-                        contentDescription = null,
-                        Modifier.size(50.dp)
+                        Icons.Filled.AccountBox, contentDescription = null, Modifier.size(50.dp)
                     )
                     androidx.compose.material3.Text(
-                        text = "昵称:",
-                        style = TextStyle(fontSize = 30.sp)
+                        text = "昵称:", style = TextStyle(fontSize = 30.sp)
                     )
                     androidx.compose.material3.Text(
-                        text = userProfile.name,
-                        style = TextStyle(fontSize = 30.sp)
+                        text = userProfile.name, style = TextStyle(fontSize = 30.sp)
                     )
                     Box(
                         modifier = Modifier
@@ -172,12 +161,10 @@ fun ShowUserProfile(userProfile: UserProfile) {
                         Modifier.size(50.dp)
                     )
                     androidx.compose.material3.Text(
-                        text = "性别:",
-                        style = TextStyle(fontSize = 30.sp)
+                        text = "性别:", style = TextStyle(fontSize = 30.sp)
                     )
                     androidx.compose.material3.Text(
-                        text = userProfile.sex,
-                        style = TextStyle(fontSize = 30.sp)
+                        text = userProfile.sex, style = TextStyle(fontSize = 30.sp)
                     )
                 }
                 TabRowDefaults.Divider(color = Color.Gray, thickness = 1.dp)
@@ -195,12 +182,10 @@ fun ShowUserProfile(userProfile: UserProfile) {
                         Modifier.size(50.dp)
                     )
                     androidx.compose.material3.Text(
-                        text = "出生日期:",
-                        style = TextStyle(fontSize = 30.sp)
+                        text = "出生日期:", style = TextStyle(fontSize = 30.sp)
                     )
                     androidx.compose.material3.Text(
-                        text = userProfile.birthDay,
-                        style = TextStyle(fontSize = 20.sp)
+                        text = userProfile.birthDay, style = TextStyle(fontSize = 20.sp)
                     )
                 }
                 TabRowDefaults.Divider(color = Color.Gray, thickness = 1.dp)
@@ -216,15 +201,13 @@ fun ShowUserProfile(userProfile: UserProfile) {
                         Modifier.size(50.dp)
                     )
                     androidx.compose.material3.Text(
-                        text = "喜好:",
-                        style = TextStyle(fontSize = 30.sp)
+                        text = "喜好:", style = TextStyle(fontSize = 30.sp)
                     )
 
                     androidx.compose.material3.Text(
-                        text =
-                        if (userProfile.preference.isEmpty())
-                            userProfile.preference.joinToString(separator = " ") else "无",
-                        style = TextStyle(fontSize = 30.sp)
+                        text = if (userProfile.preference.isEmpty()) userProfile.preference.joinToString(
+                            separator = " "
+                        ) else "无", style = TextStyle(fontSize = 30.sp)
                     )
 
                 }

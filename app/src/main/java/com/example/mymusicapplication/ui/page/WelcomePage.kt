@@ -27,7 +27,6 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.text.TextStyle
 import androidx.compose.ui.text.style.TextAlign
-import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import com.example.mymusicapplication.UserProfile
@@ -36,12 +35,6 @@ import com.example.mymusicapplication.database.toProfile
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
 
-@Preview
-@Composable
-fun PreviewWelcome() {
-    Welcome(editUserProfile = {}) {
-    }
-}
 
 @Composable
 fun Welcome(editUserProfile: () -> Unit, login: () -> Unit) {
@@ -51,7 +44,7 @@ fun Welcome(editUserProfile: () -> Unit, login: () -> Unit) {
 }
 
 @Composable
-fun WelcomeScreen(editUserProfile: () -> Unit, login: () -> Unit) {
+private fun WelcomeScreen(editUserProfile: () -> Unit, login: () -> Unit) {
     Surface(
         color = MaterialTheme.colorScheme.surface
     ) {
@@ -130,7 +123,7 @@ private fun DialogForHavingProfile(
 }
 
 @Composable
-fun CheckClipBoardAndDialog(openDialog: Boolean, callBack: () -> Unit) {
+private fun CheckClipBoardAndDialog(openDialog: Boolean, callBack: () -> Unit) {
     val context = LocalContext.current
     val coroutineScope = rememberCoroutineScope()
     var profile by remember { mutableStateOf<UserProfile?>(null) }

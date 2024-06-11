@@ -35,8 +35,7 @@ import com.example.mymusicapplication.R
 @SuppressLint("StateFlowValueCalledInComposition")
 @Composable
 fun EditPreference(
-    viewModel: EditUserProfileViewModel,
-    saveData: (List<String>) -> Unit
+    viewModel: EditUserProfileViewModel, saveData: (List<String>) -> Unit
 ) {
     val potentialAnswers = listOf(
         ImageAndName("民谣", R.drawable.minyao),
@@ -87,7 +86,7 @@ fun EditPreference(
 }
 
 @Composable
-fun CheckBoxAndText(
+private fun CheckBoxAndText(
     modifier: Modifier = Modifier,
     item: String,
     isSelected: Boolean,
@@ -98,19 +97,16 @@ fun CheckBoxAndText(
         color = if (isSelected) MaterialTheme.colorScheme.primaryContainer else MaterialTheme.colorScheme.surface,
         modifier = modifier.clip(MaterialTheme.shapes.large)
     ) {
-        Row(
-            modifier = Modifier
-                .clickable {
-                    onClick()
-                }
-                .border(
-                    width = 1.dp,
-                    color = if (isSelected) MaterialTheme.colorScheme.primary else MaterialTheme.colorScheme.outline,
-                    shape = MaterialTheme.shapes.large
-                )
-                .padding(16.dp),
-            verticalAlignment = Alignment.CenterVertically
-        ) {
+        Row(modifier = Modifier
+            .clickable {
+                onClick()
+            }
+            .border(
+                width = 1.dp,
+                color = if (isSelected) MaterialTheme.colorScheme.primary else MaterialTheme.colorScheme.outline,
+                shape = MaterialTheme.shapes.large
+            )
+            .padding(16.dp), verticalAlignment = Alignment.CenterVertically) {
             Image(
                 painter = painterResource(id = imageId),
                 contentDescription = null,

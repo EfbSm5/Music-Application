@@ -1,5 +1,6 @@
 package com.example.mymusicapplication.ui.editUserPage
 
+import android.annotation.SuppressLint
 import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
@@ -21,19 +22,16 @@ import androidx.compose.ui.unit.sp
 import com.example.mymusicapplication.EditUserProfileViewModel
 
 
-
 @Composable
 fun EditName(
     viewModel: EditUserProfileViewModel, saveData: (String) -> Unit
 ) {
-    var name by remember { mutableStateOf(viewModel.profile.value.name) }
-    DisposableEffect(Unit) {
-        onDispose {
-            saveData(name.ifEmpty {
-                "默认昵称"
-            })
-        }
-    }
+    EditNameScreen(viewModel = viewModel)
+}
+
+@SuppressLint("StateFlowValueCalledInComposition")
+@Composable
+private fun EditNameScreen(viewModel: EditUserProfileViewModel) {
     LazyColumn(
         modifier = Modifier.fillMaxWidth(), horizontalAlignment = Alignment.CenterHorizontally
     ) {
@@ -47,9 +45,8 @@ fun EditName(
         }
         item {
             TextField(
-                value = name,
-                onValueChange = { newText -> name = newText }
-            )
+                value = if (viewModel.profile.value.name != "默认昵称") viewModel.profile.value.name else "",
+                onValueChange = { newText -> viewModel.updateName(newText) })
         }
     }
 }

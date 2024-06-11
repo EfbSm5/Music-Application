@@ -5,7 +5,7 @@ import androidx.compose.runtime.Composable
 import androidx.navigation.compose.NavHost
 import androidx.navigation.compose.composable
 import androidx.navigation.compose.rememberNavController
-import com.example.mymusicapplication.ui.editUserPage.EditProfileScreen
+import com.example.mymusicapplication.ui.editUserPage.EditProfile
 import com.example.mymusicapplication.ui.page.HomeScreen
 import com.example.mymusicapplication.ui.page.Welcome
 
@@ -15,14 +15,16 @@ fun NavGraph() {
     val navControllerAtWelcomePage = rememberNavController()
     NavHost(navControllerAtWelcomePage, startDestination = "WelcomePage") {
         composable("WelcomePage") {
-            Welcome({ navControllerAtWelcomePage.navigate("EditPage") },
-                { navControllerAtWelcomePage.navigate("HomePage") })
+            Welcome(
+                editUserProfile = { navControllerAtWelcomePage.navigate("EditPage") },
+                login = { navControllerAtWelcomePage.navigate("HomePage") },
+            )
         }
         composable("HomePage") {
             HomeScreen()
         }
         composable("EditPage") {
-            EditProfileScreen(navControllerAtWelcomePage)
+            EditProfile(navControllerForHome = navControllerAtWelcomePage)
         }
     }
 }

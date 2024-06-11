@@ -22,7 +22,6 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.text.TextStyle
-import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.navigation.NavController
@@ -33,15 +32,10 @@ import androidx.navigation.compose.rememberNavController
 import com.example.mymusicapplication.EditUserProfileViewModel
 import com.example.mymusicapplication.QuestionsAndAnswers
 
-@Preview
-@Composable
-fun PreviewEditScreen() {
-    EditProfileScreen(navControllerForHome = rememberNavController())
-}
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
-fun EditProfileScreen(navControllerForHome: NavController) {
+fun EditProfile(navControllerForHome: NavController) {
     val shouldShowLast = remember { mutableStateOf(true) }
 
     val shouldShowNext = remember { mutableStateOf(true) }
@@ -89,9 +83,11 @@ fun EditProfileScreen(navControllerForHome: NavController) {
             contentAlignment = Alignment.Center,
         ) {
             EditProfileContents(
-                navController,
-                { shouldShowLast.value = it },
-                { shouldShowNext.value = it })
+                navController = navController,
+                showLastButton = { shouldShowLast.value = it },
+                showNextButton = { shouldShowNext.value = it },
+                navControllerForHome = navControllerForHome
+            )
         }
     }
 
@@ -99,36 +95,38 @@ fun EditProfileScreen(navControllerForHome: NavController) {
 
 @SuppressLint("StateFlowValueCalledInComposition")
 @Composable
-fun EditProfileContents(
+private fun EditProfileContents(
     navController: NavHostController,
     showLastButton: (Boolean) -> Unit,
-    showNextButton: (Boolean) -> Unit
+    showNextButton: (Boolean) -> Unit,
+    navControllerForHome: NavController
 ) {
     val sexQuestionsAndAnswers = QuestionsAndAnswers("你的性别", listOf("男", "女", "其他"))
     val viewModel = EditUserProfileViewModel()
+
     NavHost(navController, startDestination = "editName") {
         composable("editName") {
-            EditName(viewModel) { viewModel.updateName(it) }
+            EditName(viewModel = viewModel) { viewModel.updateName(it) }
             showLastButton(false)
             showNextButton(true)
         }
         composable("editSex") {
-            EditSex(sexQuestionsAndAnswers, viewModel) { viewModel.updateSex(it) }
+            EditSex(questionsAndAnswers = sexQuestionsAndAnswers, viewModel = viewModel) { viewModel.updateSex(it) }
             showLastButton(true)
             showNextButton(true)
         }
         composable("editBirthday") {
-            EditBirthDay(viewModel) { viewModel.updateBirthday(it) }
+            EditBirthDay(viewModel = viewModel) { viewModel.updateBirthday(it) }
             showLastButton(true)
             showNextButton(true)
         }
         composable("editPreferences") {
-            EditPreference(viewModel) { viewModel.updatePreferences(it) }
+            EditPreference(viewModel = viewModel) { viewModel.updatePreferences(it) }
             showLastButton(true)
             showNextButton(true)
         }
         composable("editEmotion") {
-            EditEmotion(viewModel) { viewModel.updateEmotion(it) }
+            EditEmotion(viewModel = viewModel) { viewModel.updateEmotion(it) }
             showLastButton(true)
             showNextButton(true)
         }
@@ -138,7 +136,11 @@ fun EditProfileContents(
             showNextButton(true)
         }
         composable("summary") {
-            ShowAll(userProfile = viewModel.profile.value, context = LocalContext.current)
+            ShowAll(
+                userProfile = viewModel.profile.value,
+                context = LocalContext.current,
+                navControllerForHome = navControllerForHome
+            )
             showNextButton(false)
             showLastButton(true)
         }
@@ -146,7 +148,7 @@ fun EditProfileContents(
 }
 
 
-fun nextScreen(navController: NavController, navControllerForHome: NavController) {
+private fun nextScreen(navController: NavController, navControllerForHome: NavController) {
     val list = listOf(
         "editName",
         "editSex",
@@ -169,7 +171,7 @@ fun nextScreen(navController: NavController, navControllerForHome: NavController
     }
 }
 
-fun lastScreen(navController: NavController, navControllerForHome: NavController) {
+private fun lastScreen(navController: NavController, navControllerForHome: NavController) {
     val list = listOf(
         "editName",
         "editSex",

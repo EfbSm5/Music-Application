@@ -59,14 +59,16 @@ fun EditSex(
             }
             item { Spacer(modifier = Modifier.height(200.dp)) }
             itemsIndexed(questionsAndAnswers.getPotentialAnswer()) { _, item ->
-                OptionsAndChoice(item, selectedOption) { selectedOption = item }
+                OptionsAndChoice(item = item, selectedOption = selectedOption) {
+                    selectedOption = item
+                }
             }
         }
     }
 }
 
 @Composable
-fun OptionsAndChoice(item: String, selectedOption: String, onClick: () -> Unit) {
+private fun OptionsAndChoice(item: String, selectedOption: String, onClick: () -> Unit) {
     Surface(
         color = if (item != selectedOption) MaterialTheme.colorScheme.surface
         else MaterialTheme.colorScheme.primaryContainer,

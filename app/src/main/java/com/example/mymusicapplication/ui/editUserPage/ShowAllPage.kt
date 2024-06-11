@@ -31,12 +31,11 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.graphics.Color
-import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.text.TextStyle
 import androidx.compose.ui.text.style.TextOverflow
-import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
+import androidx.navigation.NavController
 import coil.compose.AsyncImage
 import com.example.mymusicapplication.database.AppDataBase
 import com.example.mymusicapplication.UserProfile
@@ -47,135 +46,148 @@ import kotlinx.coroutines.launch
 
 
 @Composable
-@Preview
-fun ShowAllPreview() {
-    ShowAll(userProfile = UserProfile(), context = LocalContext.current)
-}
-
-
-@Composable
-fun ShowAll(userProfile: UserProfile, context: Context) {
+fun ShowAll(userProfile: UserProfile, context: Context, navControllerForHome: NavController) {
     Surface(
-        Modifier.padding(30.dp),
-        border = BorderStroke(2.dp, MaterialTheme.colorScheme.onPrimary)
+        modifier = Modifier.padding(30.dp),
+        border = BorderStroke(2.dp, MaterialTheme.colorScheme.outline)
     ) {
         LazyColumn(
-            modifier = Modifier.fillMaxWidth(),
-            verticalArrangement = Arrangement.Center
+            modifier = Modifier.fillMaxWidth(), verticalArrangement = Arrangement.Center
         ) {
             item { Spacer(modifier = Modifier.height(80.dp)) }
             item {
-                Row(
-                    modifier = Modifier.height(50.dp),
-                    verticalAlignment = Alignment.CenterVertically
-                ) {
-                    Icon(
-                        Icons.Filled.AccountBox,
-                        contentDescription = null,
-                        Modifier.size(50.dp)
-                    )
-                    Text(text = "昵称:", style = TextStyle(fontSize = 30.sp))
-                    Text(
-                        text = userProfile.name.ifEmpty { "默认昵称" },
-                        style = TextStyle(fontSize = 30.sp)
-                    )
-                    Box(
-                        modifier = Modifier
-                            .weight(1f)
-                            .fillMaxWidth()
-                            .size(50.dp),
-                        contentAlignment = Alignment.CenterEnd
-                    ) {
-                        AsyncImage(
-                            model = userProfile.photoFile,
-                            contentDescription = null,
-                            modifier = Modifier
-                                .clip(CircleShape)
-                                .size(50.dp)
-                        )
-                    }
-                }
+                ShowNameAndAvator(userProfile = userProfile)
                 Divider(color = Color.Gray, thickness = 1.dp)
             }
             item {
-                Row(
-                    modifier = Modifier
-                        .height(50.dp)
-                        .fillMaxWidth(),
-                    verticalAlignment = Alignment.CenterVertically
-                ) {
-                    Icon(
-                        imageVector = Icons.Filled.Face,
-                        contentDescription = null,
-                        Modifier.size(50.dp)
-                    )
-                    Text(text = "性别:", style = TextStyle(fontSize = 30.sp))
-                    Text(text = userProfile.sex, style = TextStyle(fontSize = 30.sp))
-                }
+                ShowSex(userProfile = userProfile)
                 Divider(color = Color.Gray, thickness = 1.dp)
             }
             item {
-                Row(
-                    modifier = Modifier
-                        .height(50.dp)
-                        .fillMaxWidth(),
-                    verticalAlignment = Alignment.CenterVertically,
-                ) {
-                    Icon(
-                        imageVector = Icons.Filled.DateRange,
-                        contentDescription = null,
-                        Modifier.size(50.dp)
-                    )
-                    Text(text = "出生日期:", style = TextStyle(fontSize = 30.sp))
-                    Text(text = userProfile.birthDay, style = TextStyle(fontSize = 20.sp))
-                }
+                ShowBirthDay(userProfile = userProfile)
                 Divider(color = Color.Gray, thickness = 1.dp)
             }
             item {
-                Row(
-                    modifier = Modifier.height(50.dp),
-                    verticalAlignment = Alignment.CenterVertically
-                ) {
-                    Icon(
-                        imageVector = Icons.Filled.Favorite,
-                        contentDescription = null,
-                        Modifier.size(50.dp)
-                    )
-                    Text(text = "喜好:", style = TextStyle(fontSize = 30.sp))
+                ShowPreference(userProfile = userProfile)
+                Divider(color = Color.Gray, thickness = 1.dp)
+            }
+            item {
+                DataButtons(
+                    context = context,
+                    userProfile = userProfile,
+                    navControllerForHome = navControllerForHome
+                )
+            }
+        }
+    }
+}
 
-                    Text(
-                        text =
-                        if (userProfile.preference.isNotEmpty())
-                            userProfile.preference.joinToString(separator = " ") else "无",
-                        style = TextStyle(fontSize = 20.sp),
-                        overflow = TextOverflow.Ellipsis,
-                        maxLines = 1
-                    )
+@Composable
+private fun ShowNameAndAvator(userProfile: UserProfile) {
+    Row(
+        modifier = Modifier.height(50.dp), verticalAlignment = Alignment.CenterVertically
+    ) {
+        Icon(
+            Icons.Filled.AccountBox, contentDescription = null, Modifier.size(50.dp)
+        )
+        Text(text = "昵称:", style = TextStyle(fontSize = 30.sp))
+        Text(
+            text = userProfile.name.ifEmpty { "默认昵称" }, style = TextStyle(fontSize = 30.sp)
+        )
+        Box(
+            modifier = Modifier
+                .weight(1f)
+                .fillMaxWidth()
+                .size(50.dp),
+            contentAlignment = Alignment.CenterEnd
+        ) {
+            AsyncImage(
+                model = userProfile.photoFile,
+                contentDescription = null,
+                modifier = Modifier
+                    .clip(CircleShape)
+                    .size(50.dp)
+            )
+        }
+    }
+}
 
-                }
-                Divider(color = Color.Gray, thickness = 1.dp)
-            }
-            item {
-                Row(
-                    Modifier
-                        .height(400.dp)
-                        .fillMaxWidth(),
-                    horizontalArrangement = Arrangement.Center,
-                    verticalAlignment = Alignment.CenterVertically
-                ) {
-                    Button(onClick = {
-                        uploadDataToDataBase(context, userProfile)
-                    }) {
-                        Text(text = "保存")
-                    }
-                    Spacer(modifier = Modifier.width(20.dp))
-                    Button(onClick = {
-                        uploadDataToClipBoard(context, userProfile)
-                    }) {
-                        Text(text = "输入剪切板")
-                    }
-                }
-            }
+@Composable
+private fun ShowSex(userProfile: UserProfile) {
+    Row(
+        modifier = Modifier
+            .height(50.dp)
+            .fillMaxWidth(),
+        verticalAlignment = Alignment.CenterVertically
+    ) {
+        Icon(
+            imageVector = Icons.Filled.Face, contentDescription = null, Modifier.size(50.dp)
+        )
+        Text(text = "性别:", style = TextStyle(fontSize = 30.sp))
+        Text(text = userProfile.sex, style = TextStyle(fontSize = 30.sp))
+    }
+}
+
+@Composable
+private fun ShowBirthDay(userProfile: UserProfile) {
+    Row(
+        modifier = Modifier
+            .height(50.dp)
+            .fillMaxWidth(),
+        verticalAlignment = Alignment.CenterVertically,
+    ) {
+        Icon(
+            imageVector = Icons.Filled.DateRange, contentDescription = null, Modifier.size(50.dp)
+        )
+        Text(text = "出生日期:", style = TextStyle(fontSize = 30.sp))
+        Text(text = userProfile.birthDay, style = TextStyle(fontSize = 20.sp))
+    }
+}
+
+@Composable
+private fun ShowPreference(userProfile: UserProfile) {
+    Row(
+        modifier = Modifier.height(50.dp), verticalAlignment = Alignment.CenterVertically
+    ) {
+        Icon(
+            imageVector = Icons.Filled.Favorite, contentDescription = null, Modifier.size(50.dp)
+        )
+        Text(text = "喜好:", style = TextStyle(fontSize = 30.sp))
+
+        Text(
+            text = if (userProfile.preference.isNotEmpty()) userProfile.preference.joinToString(
+                separator = " "
+            ) else "无",
+            style = TextStyle(fontSize = 20.sp),
+            overflow = TextOverflow.Ellipsis,
+            maxLines = 1
+        )
+
+    }
+}
+
+@Composable
+private fun DataButtons(
+    context: Context, userProfile: UserProfile, navControllerForHome: NavController
+) {
+    Row(
+        modifier = Modifier
+            .height(400.dp)
+            .fillMaxWidth(),
+        horizontalArrangement = Arrangement.Center,
+        verticalAlignment = Alignment.CenterVertically
+    ) {
+        Button(onClick = {
+            uploadDataToDataBase(context = context, userProfile = userProfile)
+            navControllerForHome.navigate("HomePage")
+        }) {
+            Text(text = "保存")
+        }
+        Spacer(modifier = Modifier.width(20.dp))
+        Button(onClick = {
+            uploadDataToClipBoard(context = context, userProfile = userProfile)
+        }) {
+            Text(text = "输入剪切板")
         }
     }
 }

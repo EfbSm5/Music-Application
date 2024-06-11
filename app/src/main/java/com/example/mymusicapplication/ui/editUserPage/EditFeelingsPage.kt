@@ -23,7 +23,6 @@ import androidx.compose.ui.unit.sp
 import com.example.mymusicapplication.EditUserProfileViewModel
 
 
-
 @Composable
 fun EditEmotion(viewModel: EditUserProfileViewModel, saveData: (Float) -> Unit) {
     var feeling by remember { mutableFloatStateOf(viewModel.profile.value.useEmotion) }
@@ -38,7 +37,7 @@ fun EditEmotion(viewModel: EditUserProfileViewModel, saveData: (Float) -> Unit) 
 }
 
 @Composable
-fun EditEmotionScreen(feeling: Float, onSlide: (Float) -> Unit) {
+private fun EditEmotionScreen(feeling: Float, onSlide: (Float) -> Unit) {
     LazyColumn(
         modifier = Modifier.fillMaxWidth(),
         verticalArrangement = Arrangement.Center,
@@ -55,9 +54,7 @@ fun EditEmotionScreen(feeling: Float, onSlide: (Float) -> Unit) {
         item { Spacer(modifier = Modifier.height(200.dp)) }
         item {
             Slider(
-                value = feeling,
-                onValueChange = { onSlide(it) },
-                steps = 3
+                value = feeling, onValueChange = { onSlide(it) }, steps = 3
             )
         }
         item {

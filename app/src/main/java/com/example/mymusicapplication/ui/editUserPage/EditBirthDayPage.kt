@@ -49,15 +49,14 @@ fun EditBirthDay(viewModel: EditUserProfileViewModel, saveData: (String) -> Unit
 }
 
 @Composable
-fun EditBirthDayScreen(
+private fun EditBirthDayScreen(
     dateFormat: SimpleDateFormat,
     context: Context,
     selectedDate: Calendar,
     onClick: (Calendar) -> Unit
 ) {
     Surface(
-        color = MaterialTheme.colorScheme.surface,
-        modifier = Modifier.padding(30.dp)
+        color = MaterialTheme.colorScheme.surface, modifier = Modifier.padding(30.dp)
     ) {
         LazyColumn(
             modifier = Modifier.fillMaxWidth(),
@@ -76,7 +75,7 @@ fun EditBirthDayScreen(
             item { Spacer(modifier = Modifier.height(200.dp)) }
             item {
                 Button(onClick = {
-                    showDatePicker(context, selectedDate) { newDate ->
+                    showDatePicker(context = context, selectedDate = selectedDate) { newDate ->
                         onClick(newDate)
                     }
                 }) {

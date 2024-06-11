@@ -43,7 +43,7 @@ import java.util.Locale
 import java.util.concurrent.Executors
 
 @Composable
-fun CameraView(onImageSaved: (Uri) -> Unit) {
+private fun CameraView(onImageSaved: (Uri) -> Unit) {
     var imageCapture: ImageCapture? by remember { mutableStateOf(null) }
     val context = LocalContext.current
     Column(
@@ -92,7 +92,7 @@ fun CameraView(onImageSaved: (Uri) -> Unit) {
 }
 
 
-fun takePhoto(
+private fun takePhoto(
     context: Context, imageCapture: ImageCapture, onImageSaved: (Uri) -> Unit
 ) {
     val photoFile = File(
@@ -138,7 +138,7 @@ fun EditAvator(saveData: (File) -> Unit) {
 
 
 @Composable
-fun EditAvatorScreen(
+private fun EditAvatorScreen(
     saveData: (File) -> Unit, screen: Screen, onImageSaved: (Uri) -> Unit, rePhoto: () -> Unit
 ) {
     when (screen) {
