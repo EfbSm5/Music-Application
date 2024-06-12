@@ -4,13 +4,11 @@ import android.content.Context
 import androidx.room.Database
 import androidx.room.Room
 import androidx.room.RoomDatabase
-import com.example.mymusicapplication.JSONData
+import androidx.room.TypeConverters
 import com.example.mymusicapplication.UserProfile
-import kotlinx.coroutines.CoroutineScope
-import kotlinx.coroutines.Dispatchers
-import kotlinx.coroutines.launch
 
-@Database(version = 1, entities = [JSONData::class], exportSchema = false)
+@Database(version = 1, entities = [UserProfile::class], exportSchema = false)
+@TypeConverters(Converters::class)
 abstract class AppDataBase : RoomDatabase() {
     abstract fun userDao(): ProfileDuo
 
@@ -30,31 +28,4 @@ abstract class AppDataBase : RoomDatabase() {
     }
 }
 
-fun checkDataBase(context: Context, getUserProfile: (List<UserProfile>?) -> Unit) {
-    val user = AppDataBase.getDatabase(context).userDao().loadAllUsers()
-    val userList = mutableListOf<UserProfile>()
-    for (i in user) {
-        val profile = toProfile(i)
-        if (profile != null) {
-            userList.add(profile)
-        }
-    }
-    getUserProfile(userList)
-}
 
-
-fun insertDataBase(context: Context, profile: UserProfile) {
-    val user = AppDataBase.getDatabase(context).userDao()
-    CoroutineScope(Dispatchers.IO).launch {
-        user.insertData(profile, context)
-    }
-}
-
-
-fun toProfile(jsonData: String?): UserProfile? {
-    return if (jsonData.isNullOrEmpty()) {
-        null
-    } else {
-        fromJson(jsonData)
-    }
-}

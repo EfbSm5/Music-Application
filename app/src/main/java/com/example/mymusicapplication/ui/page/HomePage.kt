@@ -41,7 +41,7 @@ import androidx.compose.ui.unit.sp
 import androidx.compose.ui.window.Dialog
 import coil.compose.AsyncImage
 import com.example.mymusicapplication.UserProfile
-import com.example.mymusicapplication.database.checkDataBase
+import com.example.mymusicapplication.database.AppDataBase
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
 
@@ -55,7 +55,7 @@ fun HomeScreen() {
     }
     LaunchedEffect(Unit) {
         coroutineScope.launch(Dispatchers.IO) {
-            checkDataBase(context) { profileInDataBase = it }
+            profileInDataBase = AppDataBase.getDatabase(context).userDao().loadAllUsers()
         }
     }
     if (profileInDataBase != null && profileInDataBase!!.isNotEmpty()) {

@@ -27,6 +27,10 @@ import androidx.compose.material.icons.filled.Favorite
 import androidx.compose.material3.Icon
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.LaunchedEffect
+import androidx.compose.runtime.mutableStateOf
+import androidx.compose.runtime.remember
+import androidx.compose.runtime.rememberCoroutineScope
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
@@ -40,13 +44,42 @@ import coil.compose.AsyncImage
 import com.example.mymusicapplication.database.AppDataBase
 import com.example.mymusicapplication.UserProfile
 import com.example.mymusicapplication.database.toJson
-import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
 
 
 @Composable
-fun ShowAll(userProfile: UserProfile, context: Context, navControllerForHome: NavController) {
+fun ShowAll(
+    userProfile: UserProfile, context: Context, navControllerForHome: NavController
+) {
+    val finished = remember { mutableStateOf(false) }
+    ShowAllScreen(userProfile = userProfile, context = context) { finished.value = true }
+    if (finished.value) {
+        InsertAndNavigate(
+            context = context,
+            userProfile = userProfile,
+            navControllerForHome = navControllerForHome
+        )
+    }
+}
+
+@Composable
+fun InsertAndNavigate(
+    context: Context, userProfile: UserProfile, navControllerForHome: NavController
+) {
+    val coroutineScope = rememberCoroutineScope()
+    LaunchedEffect(Unit) {
+        coroutineScope.launch(Dispatchers.IO) {
+            AppDataBase.getDatabase(context).userDao().insert(userProfile)
+            navControllerForHome.navigate("HomePage")
+        }
+    }
+}
+
+@Composable
+private fun ShowAllScreen(
+    userProfile: UserProfile, context: Context, onClick: () -> Unit
+) {
     Surface(
         modifier = Modifier.padding(30.dp),
         border = BorderStroke(2.dp, MaterialTheme.colorScheme.outline)
@@ -72,11 +105,7 @@ fun ShowAll(userProfile: UserProfile, context: Context, navControllerForHome: Na
                 Divider(color = Color.Gray, thickness = 1.dp)
             }
             item {
-                DataButtons(
-                    context = context,
-                    userProfile = userProfile,
-                    navControllerForHome = navControllerForHome
-                )
+                DataButtons(context = context, userProfile = userProfile, onClick = { onClick() })
             }
         }
     }
@@ -168,7 +197,7 @@ private fun ShowPreference(userProfile: UserProfile) {
 
 @Composable
 private fun DataButtons(
-    context: Context, userProfile: UserProfile, navControllerForHome: NavController
+    context: Context, userProfile: UserProfile, onClick: () -> Unit
 ) {
     Row(
         modifier = Modifier
@@ -178,8 +207,7 @@ private fun DataButtons(
         verticalAlignment = Alignment.CenterVertically
     ) {
         Button(onClick = {
-            uploadDataToDataBase(context = context, userProfile = userProfile)
-            navControllerForHome.navigate("HomePage")
+            onClick()
         }) {
             Text(text = "保存")
         }
@@ -192,12 +220,7 @@ private fun DataButtons(
     }
 }
 
-fun uploadDataToDataBase(context: Context, userProfile: UserProfile) {
-    val userDao = AppDataBase.getDatabase(context).userDao()
-    CoroutineScope(Dispatchers.IO).launch {
-        userDao.insertData(userProfile, context)
-    }
-}
+
 
 fun uploadDataToClipBoard(context: Context, userProfile: UserProfile) {
     val jsonData = toJson(userProfile)
