@@ -10,11 +10,8 @@ import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Slider
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
-import androidx.compose.runtime.DisposableEffect
+import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
-import androidx.compose.runtime.mutableFloatStateOf
-import androidx.compose.runtime.remember
-import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.text.TextStyle
@@ -24,20 +21,13 @@ import com.example.mymusicapplication.EditUserProfileViewModel
 
 
 @Composable
-fun EditEmotion(viewModel: EditUserProfileViewModel, saveData: (Float) -> Unit) {
-    var feeling by remember { mutableFloatStateOf(viewModel.profile.value.useEmotion) }
-    DisposableEffect(Unit) {
-        onDispose {
-            saveData(feeling)
-        }
-    }
-    EditEmotionScreen(feeling = feeling) {
-        feeling = it
-    }
+fun EditEmotion(viewModel: EditUserProfileViewModel) {
+    val profile by viewModel.profile.collectAsState()
+    EditEmotionScreen(feeling = profile.useEmotion){viewModel.updateEmotion(it)}
 }
 
 @Composable
-private fun EditEmotionScreen(feeling: Float, onSlide: (Float) -> Unit) {
+private fun EditEmotionScreen(feeling: Float,onSlide:(Float)->Unit) {
     LazyColumn(
         modifier = Modifier.fillMaxWidth(),
         verticalArrangement = Arrangement.Center,

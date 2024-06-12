@@ -34,6 +34,7 @@ import androidx.compose.ui.viewinterop.AndroidView
 import androidx.core.content.ContextCompat
 import androidx.core.net.toFile
 import coil.compose.AsyncImage
+import com.example.mymusicapplication.EditUserProfileViewModel
 import com.google.accompanist.permissions.ExperimentalPermissionsApi
 import com.google.accompanist.permissions.isGranted
 import com.google.accompanist.permissions.rememberPermissionState
@@ -120,7 +121,7 @@ private fun takePhoto(
 @OptIn(ExperimentalPermissionsApi::class)
 @SuppressLint("UnusedMaterial3ScaffoldPaddingParameter")
 @Composable
-fun EditAvator(saveData: (File) -> Unit) {
+fun EditAvator(viewModel: EditUserProfileViewModel) {
     var screen: Screen by remember { mutableStateOf(Screen.PermissionDenied) }
     val cameraPermissionState = rememberPermissionState(android.Manifest.permission.CAMERA)
     LaunchedEffect(cameraPermissionState.status) {
@@ -130,7 +131,8 @@ fun EditAvator(saveData: (File) -> Unit) {
             screen = Screen.Capture
         }
     }
-    EditAvatorScreen(saveData = saveData,
+    EditAvatorScreen(
+        viewModel = viewModel,
         screen = screen,
         onImageSaved = { screen = Screen.Success(uri = it) },
         rePhoto = { screen = Screen.Capture })
@@ -139,7 +141,7 @@ fun EditAvator(saveData: (File) -> Unit) {
 
 @Composable
 private fun EditAvatorScreen(
-    saveData: (File) -> Unit, screen: Screen, onImageSaved: (Uri) -> Unit, rePhoto: () -> Unit
+    viewModel: EditUserProfileViewModel, screen: Screen, onImageSaved: (Uri) -> Unit, rePhoto: () -> Unit
 ) {
     when (screen) {
         Screen.PermissionDenied -> {
@@ -156,7 +158,7 @@ private fun EditAvatorScreen(
 
         is Screen.Success -> {
             val savedImage = screen.uri.toFile()
-            saveData(savedImage)
+            viewModel.updateAvatar(savedImage)
             Column(
                 modifier = Modifier.fillMaxWidth(),
                 verticalArrangement = Arrangement.Center,

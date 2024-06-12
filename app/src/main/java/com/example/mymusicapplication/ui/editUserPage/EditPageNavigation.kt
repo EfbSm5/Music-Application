@@ -126,12 +126,12 @@ private fun EditProfileContents(
             showNextButton(true)
         }
         composable("editEmotion") {
-            EditEmotion(viewModel = viewModel) { viewModel.updateEmotion(it) }
+            EditEmotion(viewModel = viewModel)
             showLastButton(true)
             showNextButton(true)
         }
         composable("editAvatar") {
-            EditAvator { viewModel.updateAvatar(it) }
+            EditAvator (viewModel = viewModel)
             showLastButton(true)
             showNextButton(true)
         }
