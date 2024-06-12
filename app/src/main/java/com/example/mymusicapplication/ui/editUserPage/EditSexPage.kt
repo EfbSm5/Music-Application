@@ -16,6 +16,7 @@ import androidx.compose.material3.Surface
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.DisposableEffect
+import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
@@ -28,20 +29,23 @@ import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import com.example.mymusicapplication.EditUserProfileViewModel
 import com.example.mymusicapplication.QuestionsAndAnswers
+import com.example.mymusicapplication.UserProfile
 
 
 @Composable
 fun EditSex(
-    questionsAndAnswers: QuestionsAndAnswers,
-    viewModel: EditUserProfileViewModel,
-    saveData: (String) -> Unit
+    questionsAndAnswers: QuestionsAndAnswers, viewModel: EditUserProfileViewModel
 ) {
-    var selectedOption by remember { mutableStateOf(viewModel.profile.value.sex) } // 存储当前选中的选项
-    DisposableEffect(Unit) {
-        onDispose {
-            saveData(selectedOption.ifEmpty { "不详" })
-        }
-    }
+    val profile by viewModel.profile.collectAsState()
+    EditSexScreen(viewModel, profile, questionsAndAnswers)
+}
+
+@Composable
+private fun EditSexScreen(
+    viewModel: EditUserProfileViewModel,
+    profile: UserProfile,
+    questionsAndAnswers: QuestionsAndAnswers
+) {
     Surface {
         LazyColumn(
             modifier = Modifier
@@ -59,8 +63,8 @@ fun EditSex(
             }
             item { Spacer(modifier = Modifier.height(200.dp)) }
             itemsIndexed(questionsAndAnswers.getPotentialAnswer()) { _, item ->
-                OptionsAndChoice(item = item, selectedOption = selectedOption) {
-                    selectedOption = item
+                OptionsAndChoice(item = item, selectedOption = profile.sex) {
+                    viewModel.updateSex(item)
                 }
             }
         }

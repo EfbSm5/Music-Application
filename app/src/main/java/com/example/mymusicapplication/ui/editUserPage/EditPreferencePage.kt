@@ -18,9 +18,8 @@ import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Surface
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
-import androidx.compose.runtime.DisposableEffect
-import androidx.compose.runtime.mutableStateListOf
-import androidx.compose.runtime.remember
+import androidx.compose.runtime.collectAsState
+import androidx.compose.runtime.getValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
@@ -30,12 +29,13 @@ import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import com.example.mymusicapplication.EditUserProfileViewModel
 import com.example.mymusicapplication.R
+import com.example.mymusicapplication.UserProfile
 
 
 @SuppressLint("StateFlowValueCalledInComposition")
 @Composable
 fun EditPreference(
-    viewModel: EditUserProfileViewModel, saveData: (List<String>) -> Unit
+    viewModel: EditUserProfileViewModel
 ) {
     val potentialAnswers = listOf(
         ImageAndName("民谣", R.drawable.minyao),
@@ -46,13 +46,23 @@ fun EditPreference(
         ImageAndName("古典", R.drawable.gudian),
         ImageAndName("电子", R.drawable.dianzi)
     )
-    val selectedOptions = remember { mutableStateListOf<String>() }
-    selectedOptions.addAll(viewModel.profile.value.preference)
-    DisposableEffect(key1 = Unit) {
-        onDispose {
-            saveData(selectedOptions)
+    val profile by viewModel.profile.collectAsState()
+    EditPreferenceScreen(potentialAnswers, profile) { item ->
+        val preference = profile.preference.toMutableList()
+        if (profile.preference.contains(item)) {
+            preference.remove(item)
+        } else {
+            preference.add(item)
         }
+        viewModel.updatePreferences(preference)
     }
+
+}
+
+@Composable
+private fun EditPreferenceScreen(
+    potentialAnswers: List<ImageAndName>, profile: UserProfile, onClick: (String) -> Unit
+) {
     Surface(Modifier.padding(20.dp)) {
         LazyColumn(
             modifier = Modifier.fillMaxWidth(),
@@ -71,14 +81,10 @@ fun EditPreference(
                 CheckBoxAndText(
                     modifier = Modifier.padding(vertical = 6.dp),
                     item = item.name,
-                    isSelected = selectedOptions.contains(item.name),
+                    isSelected = profile.preference.contains(item.name),
                     imageId = item.imageId
                 ) {
-                    if (selectedOptions.contains(item.name)) {
-                        selectedOptions.remove(item.name)
-                    } else {
-                        selectedOptions.add(item.name)
-                    }
+                    onClick(item.name)
                 }
             }
         }
@@ -127,4 +133,3 @@ private fun CheckBoxAndText(
 }
 
 class ImageAndName(val name: String, val imageId: Int)
-

@@ -27,6 +27,7 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.text.TextStyle
 import androidx.compose.ui.text.style.TextAlign
+import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import com.example.mymusicapplication.UserProfile
@@ -89,7 +90,12 @@ private fun checkClipBoard(context: Context, callBack: (UserProfile?) -> Unit) {
         } else null
     )
 }
-
+@Preview
+@Composable
+fun preview11(){
+    DialogForHavingProfile(openDialog = true, confirm = { /*TODO*/ }) {
+    }
+}
 @Composable
 private fun DialogForHavingProfile(
     openDialog: Boolean, confirm: () -> Unit, onDismissRequest: () -> Unit

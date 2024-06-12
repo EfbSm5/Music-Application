@@ -106,22 +106,22 @@ private fun EditProfileContents(
 
     NavHost(navController, startDestination = "editName") {
         composable("editName") {
-            EditName(viewModel = viewModel) { viewModel.updateName(it) }
+            EditName(viewModel = viewModel)
             showLastButton(false)
             showNextButton(true)
         }
         composable("editSex") {
-            EditSex(questionsAndAnswers = sexQuestionsAndAnswers, viewModel = viewModel) { viewModel.updateSex(it) }
+            EditSex(questionsAndAnswers = sexQuestionsAndAnswers, viewModel = viewModel)
             showLastButton(true)
             showNextButton(true)
         }
         composable("editBirthday") {
-            EditBirthDay(viewModel = viewModel) { viewModel.updateBirthday(it) }
+            EditBirthDay(viewModel = viewModel)
             showLastButton(true)
             showNextButton(true)
         }
         composable("editPreferences") {
-            EditPreference(viewModel = viewModel) { viewModel.updatePreferences(it) }
+            EditPreference(viewModel = viewModel)
             showLastButton(true)
             showNextButton(true)
         }

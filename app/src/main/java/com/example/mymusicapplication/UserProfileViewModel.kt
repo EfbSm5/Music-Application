@@ -3,34 +3,38 @@ package com.example.mymusicapplication
 
 import androidx.lifecycle.ViewModel
 import kotlinx.coroutines.flow.MutableStateFlow
+import kotlinx.coroutines.flow.StateFlow
+import kotlinx.coroutines.flow.asStateFlow
 import java.io.File
 
 
 class EditUserProfileViewModel : ViewModel() {
-    val profile = MutableStateFlow(UserProfile())
+
+    private val _profile = MutableStateFlow(UserProfile())
+    val profile: StateFlow<UserProfile> = _profile.asStateFlow()
 
     fun updateName(name: String) {
-        profile.value = profile.value.copy(name = name)
+        _profile.value = _profile.value.copy(name = name)
     }
 
     fun updateSex(sex: String) {
-        profile.value = profile.value.copy(sex = sex)
+        _profile.value = _profile.value.copy(sex = sex)
     }
 
     fun updateBirthday(birthday: String) {
-        profile.value = profile.value.copy(birthDay = birthday)
+        _profile.value = _profile.value.copy(birthDay = birthday)
     }
 
     fun updatePreferences(preferences: List<String>) {
-        profile.value = profile.value.copy(preference = preferences)
+        _profile.value = _profile.value.copy(preference = preferences)
     }
 
     fun updateEmotion(emotion: Float) {
-        profile.value = profile.value.copy(useEmotion = emotion)
+        _profile.value = _profile.value.copy(useEmotion = emotion)
     }
 
     fun updateAvatar(avatar: File) {
-        profile.value = profile.value.copy(photoFile = avatar)
+        _profile.value = _profile.value.copy(photoFile = avatar)
     }
 }
 

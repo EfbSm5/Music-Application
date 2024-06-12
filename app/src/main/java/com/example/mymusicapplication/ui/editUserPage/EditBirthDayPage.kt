@@ -14,11 +14,8 @@ import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Surface
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
-import androidx.compose.runtime.DisposableEffect
+import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
-import androidx.compose.runtime.mutableStateOf
-import androidx.compose.runtime.remember
-import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.platform.LocalContext
@@ -26,34 +23,26 @@ import androidx.compose.ui.text.TextStyle
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import com.example.mymusicapplication.EditUserProfileViewModel
+import com.example.mymusicapplication.UserProfile
 import java.text.SimpleDateFormat
 import java.util.Calendar
 
 
 @SuppressLint("SimpleDateFormat")
 @Composable
-fun EditBirthDay(viewModel: EditUserProfileViewModel, saveData: (String) -> Unit) {
-    val dataFormat = SimpleDateFormat("yyyy-MM-dd")
-    var selectedDate by remember {
-        mutableStateOf(viewModel.profile.value.birthDay)
-    }
-    val calendar by remember { mutableStateOf(Calendar.getInstance()) }
-    calendar.time = dataFormat.parse(selectedDate)!!
+fun EditBirthDay(viewModel: EditUserProfileViewModel) {
+    val profile by viewModel.profile.collectAsState()
     val context = LocalContext.current
-    DisposableEffect(Unit) {
-        onDispose {
-            saveData(selectedDate)
-        }
+    EditBirthDayScreen(profile) {
+        showDatePicker(
+            context = context, viewModel = viewModel, profile = profile
+        )
     }
-    EditBirthDayScreen(dataFormat, context, calendar) { selectedDate = dataFormat.format(it.time) }
 }
 
 @Composable
 private fun EditBirthDayScreen(
-    dateFormat: SimpleDateFormat,
-    context: Context,
-    selectedDate: Calendar,
-    onClick: (Calendar) -> Unit
+    profile: UserProfile, openDialog: () -> Unit
 ) {
     Surface(
         color = MaterialTheme.colorScheme.surface, modifier = Modifier.padding(30.dp)
@@ -71,13 +60,11 @@ private fun EditBirthDayScreen(
                     color = MaterialTheme.colorScheme.outline
                 )
             }
-            item { Text(text = "你选择的是   " + dateFormat.format(selectedDate.time)) }
+            item { Text(text = "你选择的是   " + profile.birthDay) }
             item { Spacer(modifier = Modifier.height(200.dp)) }
             item {
                 Button(onClick = {
-                    showDatePicker(context = context, selectedDate = selectedDate) { newDate ->
-                        onClick(newDate)
-                    }
+                    openDialog()
                 }) {
                     Text("选择日期")
                 }
@@ -86,19 +73,22 @@ private fun EditBirthDayScreen(
     }
 }
 
+@SuppressLint("SimpleDateFormat")
 private fun showDatePicker(
-    context: Context, selectedDate: Calendar, onDateSelected: (Calendar) -> Unit
+    context: Context, viewModel: EditUserProfileViewModel, profile: UserProfile
 ) {
+    val dateFormat = SimpleDateFormat("yyyy-MM-dd")
+    val calendar = Calendar.getInstance()
+    calendar.time = dateFormat.parse(profile.birthDay)!!
     val datePickerDialog = DatePickerDialog(
         context,
         { _, year, month, dayOfMonth ->
-            val calendar = Calendar.getInstance()
             calendar.set(year, month, dayOfMonth)
-            onDateSelected(calendar)
+            viewModel.updateBirthday(dateFormat.format(calendar.time))
         },
-        selectedDate.get(Calendar.YEAR),
-        selectedDate.get(Calendar.MONTH),
-        selectedDate.get(Calendar.DAY_OF_MONTH)
+        calendar.get(Calendar.YEAR),
+        calendar.get(Calendar.MONTH),
+        calendar.get(Calendar.DAY_OF_MONTH)
     )
     datePickerDialog.show()
 }
