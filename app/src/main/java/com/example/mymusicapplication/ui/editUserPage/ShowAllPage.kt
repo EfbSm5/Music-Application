@@ -3,6 +3,8 @@ package com.example.mymusicapplication.ui.editUserPage
 import android.content.ClipData
 import android.content.ClipboardManager
 import android.content.Context
+import android.os.Handler
+import android.os.Looper
 import androidx.compose.foundation.BorderStroke
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
@@ -71,7 +73,9 @@ fun InsertAndNavigate(
     LaunchedEffect(Unit) {
         coroutineScope.launch(Dispatchers.IO) {
             AppDataBase.getDatabase(context).userDao().insert(userProfile)
-            navControllerForHome.navigate("HomePage")
+            Handler(Looper.getMainLooper()).post {
+                navControllerForHome.navigate("HomePage")
+            }
         }
     }
 }
@@ -219,7 +223,6 @@ private fun DataButtons(
         }
     }
 }
-
 
 
 fun uploadDataToClipBoard(context: Context, userProfile: UserProfile) {
