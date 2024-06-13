@@ -121,7 +121,7 @@ private fun takePhoto(
 @OptIn(ExperimentalPermissionsApi::class)
 @SuppressLint("UnusedMaterial3ScaffoldPaddingParameter")
 @Composable
-fun EditAvator(viewModel: EditUserProfileViewModel) {
+fun EditAvatar(viewModel: EditUserProfileViewModel) {
     var screen: Screen by remember { mutableStateOf(Screen.PermissionDenied) }
     val cameraPermissionState = rememberPermissionState(android.Manifest.permission.CAMERA)
     LaunchedEffect(cameraPermissionState.status) {
@@ -131,7 +131,7 @@ fun EditAvator(viewModel: EditUserProfileViewModel) {
             screen = Screen.Capture
         }
     }
-    EditAvatorScreen(
+    EditAvatarScreen(
         viewModel = viewModel,
         screen = screen,
         onImageSaved = { screen = Screen.Success(uri = it) },
@@ -140,8 +140,11 @@ fun EditAvator(viewModel: EditUserProfileViewModel) {
 
 
 @Composable
-private fun EditAvatorScreen(
-    viewModel: EditUserProfileViewModel, screen: Screen, onImageSaved: (Uri) -> Unit, rePhoto: () -> Unit
+private fun EditAvatarScreen(
+    viewModel: EditUserProfileViewModel,
+    screen: Screen,
+    onImageSaved: (Uri) -> Unit,
+    rePhoto: () -> Unit
 ) {
     when (screen) {
         Screen.PermissionDenied -> {

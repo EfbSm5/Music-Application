@@ -72,7 +72,17 @@ fun InsertAndNavigate(
     val coroutineScope = rememberCoroutineScope()
     LaunchedEffect(Unit) {
         coroutineScope.launch(Dispatchers.IO) {
-            AppDataBase.getDatabase(context).userDao().insert(userProfile)
+            AppDataBase.getDatabase(context).userDao().insert(
+                UserProfile(
+                    id = AppDataBase.getDatabase(context).userDao().getCount() + 1,
+                    name = userProfile.name,
+                    sex = userProfile.sex,
+                    birthDay = userProfile.birthDay,
+                    preference = userProfile.preference,
+                    useEmotion = userProfile.useEmotion,
+                    photoFile = userProfile.photoFile,
+                )
+            )
             Handler(Looper.getMainLooper()).post {
                 navControllerForHome.navigate("HomePage")
             }

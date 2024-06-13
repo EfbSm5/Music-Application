@@ -9,7 +9,6 @@ import java.io.File
 
 
 class EditUserProfileViewModel : ViewModel() {
-
     private val _profile = MutableStateFlow(UserProfile())
     val profile: StateFlow<UserProfile> = _profile.asStateFlow()
 

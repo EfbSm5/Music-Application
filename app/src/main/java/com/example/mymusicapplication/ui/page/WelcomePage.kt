@@ -84,11 +84,14 @@ private fun checkClipBoard(context: Context, callBack: (UserProfile?) -> Unit) {
             val clipData = clipboard.primaryClip
             if (clipData != null) {
                 val item = clipData.getItemAt(0)
-                toProfile(item.text.toString())
+                if (item.text != null) {
+                    toProfile(item.text.toString())
+                } else null
             } else null
         } else null
     )
 }
+
 private fun toProfile(jsonData: String?): UserProfile? {
     return if (jsonData.isNullOrEmpty()) {
         null

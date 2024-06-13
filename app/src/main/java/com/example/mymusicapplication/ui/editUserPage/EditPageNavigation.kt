@@ -131,7 +131,7 @@ private fun EditProfileContents(
             showNextButton(true)
         }
         composable("editAvatar") {
-            EditAvator (viewModel = viewModel)
+            EditAvatar (viewModel = viewModel)
             showLastButton(true)
             showNextButton(true)
         }

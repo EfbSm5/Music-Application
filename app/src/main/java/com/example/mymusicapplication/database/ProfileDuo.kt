@@ -9,7 +9,7 @@ import com.example.mymusicapplication.UserProfile
 @Dao
 interface ProfileDuo {
 
-    @Insert(onConflict = OnConflictStrategy.IGNORE)
+    @Insert(onConflict = OnConflictStrategy.REPLACE)
     fun insert(userProfile: UserProfile)
 
     @Query("SELECT COUNT(*) FROM profile")
@@ -20,5 +20,5 @@ interface ProfileDuo {
 
     @Query("select * from profile order by id desc ")
     fun loadAllUsers(): List<UserProfile>
-    
+
 }
