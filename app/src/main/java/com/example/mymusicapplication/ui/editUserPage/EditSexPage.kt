@@ -30,9 +30,10 @@ import com.example.mymusicapplication.UserProfile
 
 @Composable
 fun EditSex(
-    questionsAndAnswers: QuestionsAndAnswers, viewModel: EditUserProfileViewModel
+    viewModel: EditUserProfileViewModel
 ) {
     val profile by viewModel.profile.collectAsState()
+    val questionsAndAnswers = QuestionsAndAnswers("你的性别", listOf("男", "女", "其他"))
     EditSexScreen(viewModel, profile, questionsAndAnswers)
 }
 

@@ -1,10 +1,9 @@
 package com.example.mymusicapplication.ui.editUserPage
 
+import android.annotation.SuppressLint
 import android.content.ClipData
 import android.content.ClipboardManager
 import android.content.Context
-import android.os.Handler
-import android.os.Looper
 import androidx.compose.foundation.BorderStroke
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
@@ -29,10 +28,8 @@ import androidx.compose.material.icons.filled.Favorite
 import androidx.compose.material3.Icon
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.runtime.Composable
-import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
-import androidx.compose.runtime.rememberCoroutineScope
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
@@ -43,50 +40,23 @@ import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.navigation.NavController
 import coil.compose.AsyncImage
-import com.example.mymusicapplication.database.AppDataBase
+import com.example.mymusicapplication.EditUserProfileViewModel
 import com.example.mymusicapplication.UserProfile
 import com.example.mymusicapplication.database.toJson
-import kotlinx.coroutines.Dispatchers
-import kotlinx.coroutines.launch
 
 
+@SuppressLint("StateFlowValueCalledInComposition")
 @Composable
 fun ShowAll(
-    userProfile: UserProfile, context: Context, navControllerForHome: NavController
+    viewModel: EditUserProfileViewModel, context: Context, navControllerForHome: NavController
 ) {
     val finished = remember { mutableStateOf(false) }
-    ShowAllScreen(userProfile = userProfile, context = context) { finished.value = true }
-    if (finished.value) {
-        InsertAndNavigate(
-            context = context,
-            userProfile = userProfile,
-            navControllerForHome = navControllerForHome
-        )
+    ShowAllScreen(userProfile = viewModel.profile.value, context = context) {
+        finished.value = true
     }
-}
-
-@Composable
-fun InsertAndNavigate(
-    context: Context, userProfile: UserProfile, navControllerForHome: NavController
-) {
-    val coroutineScope = rememberCoroutineScope()
-    LaunchedEffect(Unit) {
-        coroutineScope.launch(Dispatchers.IO) {
-            AppDataBase.getDatabase(context).userDao().insert(
-                UserProfile(
-                    id = AppDataBase.getDatabase(context).userDao().getCount() + 1,
-                    name = userProfile.name,
-                    sex = userProfile.sex,
-                    birthDay = userProfile.birthDay,
-                    preference = userProfile.preference,
-                    useEmotion = userProfile.useEmotion,
-                    photoFile = userProfile.photoFile,
-                )
-            )
-            Handler(Looper.getMainLooper()).post {
-                navControllerForHome.navigate("HomePage")
-            }
-        }
+    if (finished.value) {
+        viewModel.InsertDataToDataBase(context = context)
+        navControllerForHome.navigate("HomePage")
     }
 }
 
@@ -103,7 +73,7 @@ private fun ShowAllScreen(
         ) {
             item { Spacer(modifier = Modifier.height(80.dp)) }
             item {
-                ShowNameAndAvator(userProfile = userProfile)
+                ShowNameAndAvatar(userProfile = userProfile)
                 Divider(color = Color.Gray, thickness = 1.dp)
             }
             item {
@@ -126,7 +96,7 @@ private fun ShowAllScreen(
 }
 
 @Composable
-private fun ShowNameAndAvator(userProfile: UserProfile) {
+private fun ShowNameAndAvatar(userProfile: UserProfile) {
     Row(
         modifier = Modifier.height(50.dp), verticalAlignment = Alignment.CenterVertically
     ) {

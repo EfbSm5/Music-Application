@@ -1,6 +1,7 @@
 package com.example.mymusicapplication.ui.editUserPage
 
 import android.annotation.SuppressLint
+import androidx.compose.animation.Crossfade
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Row
@@ -16,8 +17,10 @@ import androidx.compose.material3.Scaffold
 import androidx.compose.material3.Text
 import androidx.compose.material3.TopAppBar
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
+import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.platform.LocalContext
@@ -25,22 +28,14 @@ import androidx.compose.ui.text.TextStyle
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.navigation.NavController
-import androidx.navigation.NavHostController
-import androidx.navigation.compose.NavHost
-import androidx.navigation.compose.composable
-import androidx.navigation.compose.rememberNavController
 import com.example.mymusicapplication.EditUserProfileViewModel
-import com.example.mymusicapplication.QuestionsAndAnswers
 
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
 fun EditProfile(navControllerForHome: NavController) {
-    val shouldShowLast = remember { mutableStateOf(true) }
-
-    val shouldShowNext = remember { mutableStateOf(true) }
-
-    val navController = rememberNavController()
+    var state: State by remember { mutableStateOf(State.Name) }
+    val viewModel by remember { mutableStateOf(EditUserProfileViewModel()) }
     Scaffold(topBar = {
         TopAppBar(title = {
             Text(
@@ -56,20 +51,21 @@ fun EditProfile(navControllerForHome: NavController) {
                 horizontalArrangement = Arrangement.SpaceBetween,
                 verticalAlignment = Alignment.CenterVertically
             ) {
-                if (shouldShowLast.value) {
+                if (state != State.Name) {
                     Button(
                         onClick = {
-                            lastScreen(navController, navControllerForHome)
-                        }, modifier = Modifier.weight(1f)
+                            state = state.lastScreen()
+                        }, modifier = Modifier
+                            .weight(1f)
                     ) {
                         Text(text = "上一题")
                     }
                 } else Spacer(modifier = Modifier.weight(1f))
                 Spacer(modifier = Modifier.width(12.dp))
-                if (shouldShowNext.value) {
+                if (state != State.Data) {
                     Button(
                         onClick = {
-                            nextScreen(navController, navControllerForHome)
+                            state = state.nextScreen()
                         }, modifier = Modifier.weight(1f)
                     ) {
                         Text(text = "下一题")
@@ -82,116 +78,85 @@ fun EditProfile(navControllerForHome: NavController) {
             modifier = Modifier.padding(it),
             contentAlignment = Alignment.Center,
         ) {
-            EditProfileContents(
-                navController = navController,
-                showLastButton = { shouldShowLast.value = it },
-                showNextButton = { shouldShowNext.value = it },
-                navControllerForHome = navControllerForHome
+            UserConfigurationInitializationPage(
+                navControllerForHome = navControllerForHome,
+                currentScreen = state,
+                viewModel = viewModel
             )
         }
     }
 
 }
+
 
 @SuppressLint("StateFlowValueCalledInComposition")
 @Composable
-private fun EditProfileContents(
-    navController: NavHostController,
-    showLastButton: (Boolean) -> Unit,
-    showNextButton: (Boolean) -> Unit,
-    navControllerForHome: NavController
+fun UserConfigurationInitializationPage(
+    navControllerForHome: NavController, currentScreen: State, viewModel: EditUserProfileViewModel
 ) {
-    val sexQuestionsAndAnswers = QuestionsAndAnswers("你的性别", listOf("男", "女", "其他"))
-    val viewModel = EditUserProfileViewModel()
+    val context = LocalContext.current
+    Crossfade(targetState = currentScreen, label = "") { screen ->
+        when (screen) {
+            State.Name -> {
+                EditName(viewModel = viewModel)
+            }
 
-    NavHost(navController, startDestination = "editName") {
-        composable("editName") {
-            EditName(viewModel = viewModel)
-            showLastButton(false)
-            showNextButton(true)
-        }
-        composable("editSex") {
-            EditSex(questionsAndAnswers = sexQuestionsAndAnswers, viewModel = viewModel)
-            showLastButton(true)
-            showNextButton(true)
-        }
-        composable("editBirthday") {
-            EditBirthDay(viewModel = viewModel)
-            showLastButton(true)
-            showNextButton(true)
-        }
-        composable("editPreferences") {
-            EditPreference(viewModel = viewModel)
-            showLastButton(true)
-            showNextButton(true)
-        }
-        composable("editEmotion") {
-            EditEmotion(viewModel = viewModel)
-            showLastButton(true)
-            showNextButton(true)
-        }
-        composable("editAvatar") {
-            EditAvatar (viewModel = viewModel)
-            showLastButton(true)
-            showNextButton(true)
-        }
-        composable("summary") {
-            ShowAll(
-                userProfile = viewModel.profile.value,
-                context = LocalContext.current,
-                navControllerForHome = navControllerForHome
-            )
-            showNextButton(false)
-            showLastButton(true)
+            State.Sex -> {
+                EditSex(viewModel = viewModel)
+            }
+
+            State.Avatar -> {
+                EditAvatar(viewModel = viewModel)
+            }
+
+            State.Birthday -> {
+                EditBirthDay(viewModel = viewModel)
+            }
+
+            State.FloatValue -> {
+                EditEmotion(viewModel = viewModel)
+            }
+
+            State.Preference -> {
+                EditPreference(viewModel = viewModel)
+            }
+
+            State.Data -> {
+                ShowAll(
+                    viewModel,
+                    context = context,
+                    navControllerForHome = navControllerForHome
+                )
+            }
+
+            else -> {
+            }
         }
     }
 }
 
+sealed interface State {
+    data object Name : State
+    data object Sex : State
+    data object Birthday : State
+    data object Preference : State
+    data object FloatValue : State
+    data object Avatar : State
+    data object Data : State
+    data object Undefined : State
 
-private fun nextScreen(navController: NavController, navControllerForHome: NavController) {
-    val list = listOf(
-        "editName",
-        "editSex",
-        "editBirthday",
-        "editPreferences",
-        "editEmotion",
-        "editAvatar",
-        "summary"
-    )
-    val currentDestination = navController.currentBackStackEntry?.destination
-    val currentRoute = currentDestination?.route
-    val index = list.indexOf(currentRoute)
-    val nextRoute = if (index in 0 until list.lastIndex) {
-        list[index + 1]
-    } else null
-    if (nextRoute != null) {
-        navController.navigate(nextRoute)
-    } else {
-        navControllerForHome.navigate("HomePage")
+    companion object {
+        private val list =
+            listOf(Name, Sex, Birthday, Preference, FloatValue, Avatar, Data, Undefined)
+    }
+
+    fun nextScreen(): State {
+        return list[list.indexOf(this) + 1]
+    }
+
+    fun lastScreen(): State {
+        return list[list.indexOf(this) - 1]
     }
 }
 
-private fun lastScreen(navController: NavController, navControllerForHome: NavController) {
-    val list = listOf(
-        "editName",
-        "editSex",
-        "editBirthday",
-        "editPreferences",
-        "editEmotion",
-        "editAvatar",
-        "summary"
-    )
-    val currentDestination = navController.currentBackStackEntry?.destination
-    val currentRoute = currentDestination?.route
-    val index = list.indexOf(currentRoute)
-    val lastRoute = if (index > 0) {
-        list[index - 1]
-    } else {
-        null
-    }
-    if (lastRoute != null) {
-        navController.navigate(lastRoute)
-    } else {
-        navControllerForHome.navigate("WelcomePage")
-    }
-}
+
