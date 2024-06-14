@@ -1,5 +1,8 @@
 package com.example.mymusicapplication.ui.editUserPage
 
+import androidx.compose.animation.AnimatedVisibility
+import androidx.compose.animation.expandIn
+import androidx.compose.animation.shrinkOut
 import androidx.compose.foundation.border
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Arrangement
@@ -14,6 +17,7 @@ import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.RadioButton
 import androidx.compose.material3.Surface
 import androidx.compose.material3.Text
+import androidx.compose.material3.TextField
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
@@ -43,6 +47,7 @@ private fun EditSexScreen(
     profile: UserProfile,
     questionsAndAnswers: QuestionsAndAnswers
 ) {
+    val visibility: Boolean = (profile.sex != "男" && profile.sex != "女"&&profile.sex!="不详")
     Surface {
         LazyColumn(
             modifier = Modifier
@@ -64,9 +69,16 @@ private fun EditSexScreen(
                     viewModel.updateSex(item)
                 }
             }
+            item {
+                AnimatedVisibility(visible = visibility, enter = expandIn(), exit = shrinkOut()) {
+                    TextField(value = profile.sex,
+                        onValueChange = { newText -> viewModel.updateSex(newText) })
+                }
+            }
         }
     }
 }
+
 
 @Composable
 private fun OptionsAndChoice(item: String, selectedOption: String, onClick: () -> Unit) {

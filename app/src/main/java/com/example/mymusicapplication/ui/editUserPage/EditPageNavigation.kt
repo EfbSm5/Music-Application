@@ -7,17 +7,22 @@ import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxWidth
+import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.width
 import androidx.compose.material3.Button
 import androidx.compose.material3.BottomAppBar
+import androidx.compose.material3.ButtonDefaults
 import androidx.compose.material3.ExperimentalMaterial3Api
+import androidx.compose.material3.LinearProgressIndicator
 import androidx.compose.material3.MaterialTheme
+import androidx.compose.material3.OutlinedButton
 import androidx.compose.material3.Scaffold
 import androidx.compose.material3.Text
 import androidx.compose.material3.TopAppBar
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
+import androidx.compose.runtime.mutableFloatStateOf
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
@@ -41,6 +46,10 @@ fun EditProfile(navControllerForHome: NavController) {
             Text(
                 text = "让我们更了解你", style = TextStyle(fontSize = 30.sp)
             )
+//            LinearProgressIndicator(
+//                progress = (),
+//                modifier = Modifier.fillMaxWidth(),
+//            )
         })
     }, bottomBar = {
         BottomAppBar(
@@ -52,11 +61,10 @@ fun EditProfile(navControllerForHome: NavController) {
                 verticalAlignment = Alignment.CenterVertically
             ) {
                 if (state != State.Name) {
-                    Button(
+                    OutlinedButton(
                         onClick = {
                             state = state.lastScreen()
-                        }, modifier = Modifier
-                            .weight(1f)
+                        }, modifier = Modifier.weight(1f)
                     ) {
                         Text(text = "上一题")
                     }
@@ -123,9 +131,7 @@ fun UserConfigurationInitializationPage(
 
             State.Data -> {
                 ShowAll(
-                    viewModel,
-                    context = context,
-                    navControllerForHome = navControllerForHome
+                    viewModel, context = context, navControllerForHome = navControllerForHome
                 )
             }
 

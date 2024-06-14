@@ -1,6 +1,5 @@
 package com.example.mymusicapplication.ui.page
 
-import androidx.compose.foundation.BorderStroke
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
@@ -110,7 +109,7 @@ private fun SingleChoiceDialog(
 @Composable
 private fun ShowUserProfile(userProfile: UserProfile) {
     Surface(
-        Modifier.padding(30.dp), border = BorderStroke(2.dp, MaterialTheme.colorScheme.onPrimary)
+        Modifier.padding(30.dp)
     ) {
         LazyColumn(
             modifier = Modifier.fillMaxWidth(), verticalArrangement = Arrangement.Center

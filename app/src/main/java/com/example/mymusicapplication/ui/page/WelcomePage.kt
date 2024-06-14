@@ -12,6 +12,7 @@ import androidx.compose.material3.AlertDialog
 import androidx.compose.material3.Button
 import androidx.compose.material3.Icon
 import androidx.compose.material3.MaterialTheme
+import androidx.compose.material3.OutlinedButton
 import androidx.compose.material3.Surface
 import androidx.compose.material3.Text
 import androidx.compose.material3.TextButton
@@ -58,19 +59,19 @@ private fun WelcomeScreen(editUserProfile: () -> Unit, login: () -> Unit) {
             )
             Spacer(modifier = Modifier.height(100.dp))
             Button(
+                onClick = { login() }, modifier = Modifier.width(200.dp)
+            ) {
+                Text(
+                    text = "登录", modifier = Modifier.width(200.dp), textAlign = TextAlign.Center
+                )
+            }
+            OutlinedButton(
                 onClick = { editUserProfile() }, modifier = Modifier.width(200.dp)
             ) {
                 Text(
                     text = "进入编辑账户界面",
                     modifier = Modifier.width(400.dp),
                     textAlign = TextAlign.Center
-                )
-            }
-            Button(
-                onClick = { login() }, modifier = Modifier.width(200.dp)
-            ) {
-                Text(
-                    text = "登录", modifier = Modifier.width(200.dp), textAlign = TextAlign.Center
                 )
             }
         }

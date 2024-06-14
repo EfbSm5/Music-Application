@@ -65,8 +65,7 @@ private fun ShowAllScreen(
     userProfile: UserProfile, context: Context, onClick: () -> Unit
 ) {
     Surface(
-        modifier = Modifier.padding(30.dp),
-        border = BorderStroke(2.dp, MaterialTheme.colorScheme.outline)
+        modifier = Modifier.padding(30.dp)
     ) {
         LazyColumn(
             modifier = Modifier.fillMaxWidth(), verticalArrangement = Arrangement.Center
