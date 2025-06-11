@@ -1,5 +1,6 @@
 package com.example.mymusicapplication
 
+import android.annotation.SuppressLint
 import androidx.room.ColumnInfo
 import androidx.room.Entity
 import androidx.room.PrimaryKey
@@ -14,7 +15,9 @@ data class UserProfile(
     @PrimaryKey(autoGenerate = true) val id: Int = 1,
     @ColumnInfo(name = "name") val name: String = "默认昵称",
     @ColumnInfo(name = "sex") val sex: String = "不详",
-    @ColumnInfo(name = "birthDay") val birthDay: String = SimpleDateFormat("yyyy-MM-dd").format(
+    @SuppressLint("SimpleDateFormat") @ColumnInfo(name = "birthDay") val birthDay: String = SimpleDateFormat(
+        "yyyy-MM-dd"
+    ).format(
         Calendar.getInstance().time
     ),
     @TypeConverters(Converters::class) @ColumnInfo(name = "preference") val preference: List<String> = listOf(

@@ -59,7 +59,8 @@ fun HomeScreen() {
     }
     if (profileInDataBase != null && profileInDataBase!!.isNotEmpty()) {
         if (profileInDataBase!!.size > 1) {
-            SingleChoiceDialog(openDialog = profileShow == null,
+            SingleChoiceDialog(
+                openDialog = profileShow == null,
                 options = profileInDataBase!!,
                 onClick = { profileShow = it },
                 {})
@@ -90,7 +91,8 @@ private fun SingleChoiceDialog(
                         )
                     }
                     itemsIndexed(options) { _, option ->
-                        Row(verticalAlignment = Alignment.CenterVertically,
+                        Row(
+                            verticalAlignment = Alignment.CenterVertically,
                             modifier = Modifier
                                 .fillMaxWidth()
                                 .clickable { onClick(option) }

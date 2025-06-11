@@ -4,7 +4,6 @@ import android.annotation.SuppressLint
 import android.content.ClipData
 import android.content.ClipboardManager
 import android.content.Context
-import androidx.compose.foundation.BorderStroke
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Row
@@ -16,29 +15,30 @@ import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.shape.CircleShape
-import androidx.compose.material3.Button
-import androidx.compose.material3.Surface
 import androidx.compose.material.TabRowDefaults.Divider
-import androidx.compose.material3.Text
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.AccountBox
 import androidx.compose.material.icons.filled.DateRange
 import androidx.compose.material.icons.filled.Face
 import androidx.compose.material.icons.filled.Favorite
+import androidx.compose.material3.Button
 import androidx.compose.material3.Icon
-import androidx.compose.material3.MaterialTheme
+import androidx.compose.material3.Surface
+import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
+import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.text.TextStyle
 import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
-import androidx.navigation.NavController
 import coil.compose.AsyncImage
 import com.example.mymusicapplication.EditUserProfileViewModel
 import com.example.mymusicapplication.UserProfile
@@ -48,15 +48,16 @@ import com.example.mymusicapplication.database.toJson
 @SuppressLint("StateFlowValueCalledInComposition")
 @Composable
 fun ShowAll(
-    viewModel: EditUserProfileViewModel, context: Context, navControllerForHome: NavController
+    viewModel: EditUserProfileViewModel, navigateToHomePage: () -> Unit
 ) {
-    val finished = remember { mutableStateOf(false) }
+    val context = LocalContext.current
+    var finished by remember { mutableStateOf(false) }
     ShowAllScreen(userProfile = viewModel.profile.value, context = context) {
-        finished.value = true
+        finished = true
     }
-    if (finished.value) {
-        viewModel.InsertDataToDataBase(context = context)
-        navControllerForHome.navigate("HomePage")
+    if (finished) {
+        viewModel.insertDataToDataBase(context = context)
+        navigateToHomePage()
     }
 }
 

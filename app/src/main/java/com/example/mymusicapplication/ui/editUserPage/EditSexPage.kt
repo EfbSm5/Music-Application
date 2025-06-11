@@ -6,13 +6,12 @@ import androidx.compose.animation.shrinkOut
 import androidx.compose.foundation.border
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Arrangement
+import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
-import androidx.compose.foundation.lazy.LazyColumn
-import androidx.compose.foundation.lazy.itemsIndexed
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.RadioButton
 import androidx.compose.material3.Surface
@@ -28,7 +27,6 @@ import androidx.compose.ui.text.TextStyle
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import com.example.mymusicapplication.EditUserProfileViewModel
-import com.example.mymusicapplication.QuestionsAndAnswers
 import com.example.mymusicapplication.UserProfile
 
 
@@ -37,44 +35,41 @@ fun EditSex(
     viewModel: EditUserProfileViewModel
 ) {
     val profile by viewModel.profile.collectAsState()
-    val questionsAndAnswers = QuestionsAndAnswers("你的性别", listOf("男", "女", "其他"))
-    EditSexScreen(viewModel, profile, questionsAndAnswers)
+    EditSexScreen(viewModel, profile)
 }
 
 @Composable
 private fun EditSexScreen(
-    viewModel: EditUserProfileViewModel,
-    profile: UserProfile,
-    questionsAndAnswers: QuestionsAndAnswers
+    viewModel: EditUserProfileViewModel, profile: UserProfile
 ) {
-    val visibility: Boolean = (profile.sex != "男" && profile.sex != "女"&&profile.sex!="不详")
+    val options = listOf<String>("man", "woman", "else")
+    val visibility: Boolean =
+        (profile.sex != "man" && profile.sex != "woman" && profile.sex != "else")
     Surface {
-        LazyColumn(
+        Column(
             modifier = Modifier
                 .fillMaxWidth()
                 .padding(30.dp),
             verticalArrangement = Arrangement.Center,
             horizontalAlignment = Alignment.CenterHorizontally
         ) {
-            item {
-                Text(
-                    text = questionsAndAnswers.getQuestion(),
-                    style = TextStyle(fontSize = 30.sp),
-                    color = MaterialTheme.colorScheme.primary
-                )
-            }
-            item { Spacer(modifier = Modifier.height(200.dp)) }
-            itemsIndexed(questionsAndAnswers.getPotentialAnswer()) { _, item ->
+            Text(
+                text = "what is your sex",
+                style = TextStyle(fontSize = 30.sp),
+                color = MaterialTheme.colorScheme.primary
+            )
+            Spacer(modifier = Modifier.height(200.dp))
+            for (item in options) {
                 OptionsAndChoice(item = item, selectedOption = profile.sex) {
                     viewModel.updateSex(item)
                 }
             }
-            item {
-                AnimatedVisibility(visible = visibility, enter = expandIn(), exit = shrinkOut()) {
-                    TextField(value = profile.sex,
-                        onValueChange = { newText -> viewModel.updateSex(newText) })
-                }
+            AnimatedVisibility(visible = visibility, enter = expandIn(), exit = shrinkOut()) {
+                TextField(
+                    value = profile.sex,
+                    onValueChange = { newText -> viewModel.updateSex(newText) })
             }
+
         }
     }
 }
@@ -108,7 +103,7 @@ private fun OptionsAndChoice(item: String, selectedOption: String, onClick: () -
                     .weight(1f)
             )
             RadioButton(
-                selected = selectedOption == item, // 如果当前选项是选中的选项，则RadioButton被选中
+                selected = selectedOption == item,
                 onClick = { onClick() },
             )
         }

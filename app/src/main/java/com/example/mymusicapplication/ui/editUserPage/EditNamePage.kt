@@ -1,10 +1,9 @@
 package com.example.mymusicapplication.ui.editUserPage
 
-import android.annotation.SuppressLint
+import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
-import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Text
 import androidx.compose.material3.TextField
@@ -26,23 +25,19 @@ fun EditName(viewModel: EditUserProfileViewModel) {
     EditNameScreen(viewModel = viewModel, profile)
 }
 
-@SuppressLint("StateFlowValueCalledInComposition")
 @Composable
 private fun EditNameScreen(viewModel: EditUserProfileViewModel, profile: UserProfile) {
-    LazyColumn(
+    Column(
         modifier = Modifier.fillMaxWidth(), horizontalAlignment = Alignment.CenterHorizontally
     ) {
-        item { Spacer(modifier = Modifier.height(200.dp)) }
-        item {
-            Text(
-                text = "请输入你的昵称",
-                style = TextStyle(fontSize = 25.sp),
-                color = MaterialTheme.colorScheme.primary
-            )
-        }
-        item {
-            TextField(value = if (profile.name != "默认昵称") profile.name else "",
-                onValueChange = { newText -> viewModel.updateName(newText) })
-        }
+        Spacer(modifier = Modifier.height(200.dp))
+        Text(
+            text = "请输入你的昵称",
+            style = TextStyle(fontSize = 25.sp),
+            color = MaterialTheme.colorScheme.primary
+        )
+        TextField(
+            value = if (profile.name != "默认昵称") profile.name else "",
+            onValueChange = { newText -> viewModel.updateName(newText) })
     }
 }

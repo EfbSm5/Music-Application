@@ -21,7 +21,6 @@ import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
-import androidx.compose.runtime.rememberCoroutineScope
 import androidx.compose.runtime.saveable.rememberSaveable
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Modifier
@@ -86,27 +85,21 @@ private fun checkClipBoard(context: Context, callBack: (UserProfile?) -> Unit) {
             if (clipData != null) {
                 val item = clipData.getItemAt(0)
                 if (item.text != null) {
-                    toProfile(item.text.toString())
+                    fromJson(item.text.toString())
                 } else null
             } else null
         } else null
     )
 }
 
-private fun toProfile(jsonData: String?): UserProfile? {
-    return if (jsonData.isNullOrEmpty()) {
-        null
-    } else {
-        fromJson(jsonData)
-    }
-}
 
 @Composable
 private fun DialogForHavingProfile(
     openDialog: Boolean, confirm: () -> Unit, onDismissRequest: () -> Unit
 ) {
     if (openDialog) {
-        AlertDialog(onDismissRequest = onDismissRequest,
+        AlertDialog(
+            onDismissRequest = onDismissRequest,
             icon = { Icon(Icons.Filled.Edit, contentDescription = null) },
             title = {
                 Text(text = "我们发现你的剪切板有我们想要的数据")
@@ -136,10 +129,9 @@ private fun DialogForHavingProfile(
 @Composable
 private fun CheckClipBoardAndDialog(openDialog: Boolean, callBack: () -> Unit) {
     val context = LocalContext.current
-    val coroutineScope = rememberCoroutineScope()
     var profile by remember { mutableStateOf<UserProfile?>(null) }
     LaunchedEffect(Unit) {
-        coroutineScope.launch(Dispatchers.IO) {
+        launch(Dispatchers.IO) {
             checkClipBoard(context) { profile = it }
         }
     }

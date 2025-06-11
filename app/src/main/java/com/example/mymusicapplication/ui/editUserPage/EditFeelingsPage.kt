@@ -1,12 +1,12 @@
 package com.example.mymusicapplication.ui.editUserPage
 
 import androidx.compose.foundation.layout.Arrangement
+import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
-import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Slider
 import androidx.compose.material3.Surface
@@ -31,34 +31,28 @@ fun EditEmotion(viewModel: EditUserProfileViewModel) {
 @Composable
 private fun EditEmotionScreen(feeling: Float, onSlide: (Float) -> Unit) {
     Surface(modifier = Modifier.padding(30.dp)) {
-        LazyColumn(
+        Column(
             modifier = Modifier.fillMaxWidth(),
             verticalArrangement = Arrangement.Center,
             horizontalAlignment = Alignment.CenterHorizontally
         ) {
-            item { Spacer(modifier = Modifier.height(200.dp)) }
-            item {
-                Text(
-                    text = "你更喜欢更轻柔的音乐还是更有力量的音乐",
-                    style = TextStyle(fontSize = 20.sp),
-                    color = MaterialTheme.colorScheme.outline
-                )
-            }
-            item { Spacer(modifier = Modifier.height(200.dp)) }
-            item {
-                Slider(
-                    value = feeling, onValueChange = { onSlide(it) }, steps = 3
-                )
-            }
-            item {
-                Row(
-                    modifier = Modifier.fillMaxWidth(),
-                    horizontalArrangement = Arrangement.SpaceBetween
-                ) {
-                    Text(text = "更轻柔")
-                    Text(text = "都行")
-                    Text(text = "更热烈")
-                }
+            Spacer(modifier = Modifier.height(200.dp))
+            Text(
+                text = "你更喜欢更轻柔的音乐还是更有力量的音乐",
+                style = TextStyle(fontSize = 20.sp),
+                color = MaterialTheme.colorScheme.outline
+            )
+            Spacer(modifier = Modifier.height(200.dp))
+            Slider(
+                value = feeling, onValueChange = { onSlide(it) }, steps = 3
+            )
+            Row(
+                modifier = Modifier.fillMaxWidth(),
+                horizontalArrangement = Arrangement.SpaceBetween
+            ) {
+                Text(text = "更轻柔")
+                Text(text = "都行")
+                Text(text = "更热烈")
             }
         }
     }
